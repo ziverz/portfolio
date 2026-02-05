@@ -1,0 +1,59 @@
+:root {
+    --bg-color: rgb(37, 34, 34);
+    --text-font: "Bungee", sans-serif;
+    font-weight: normal;
+    --text-color: #fffafa;
+    --gradient-color: linear-gradient(to bottom, #36454F, #EDEADE)
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    background: var(--gradient-color);
+    background-attachment: fixed;
+    font-family: var(--text-font);
+    min-height: 100dvh;
+}
+
+.hero_section {
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Centers horizontally */
+    align-items: center;
+    /* centers vertically */
+}
+
+iframe {
+    width: 100%;
+    max-width: 980px;
+    max-height: 100vh;
+    aspect-ratio: 980 / 640;
+    height: auto;
+
+    /* all this just makes the embedded game work properly */
+}
+
+.getBigMan {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    width: 100%;
+}
+
+@media (max-height: 800px) {
+    .getBigMan {
+        padding: 1rem;
+    }
+}
