@@ -9,9 +9,16 @@
 
 <body>
     <form action="/convert" method="post" enctype="multipart/form-data">
+        <!-- action="convert" tells the form to send the data to url path named /convert  -->
         <label for="file-upload">
             Choose MP4 File:
         </label>
+        <input type="file" id="file-upload" name="file" accept=".mp4" required>
+        <br><br>
+
+        <button type="submit">
+            Convert to MP3
+        </button>
     </form>
 </body>
 
