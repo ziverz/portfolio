@@ -2,11 +2,11 @@ import os
 import ffmpeg
 from flask import Flask, render_template, request, send_file, after_this_request
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
 
 @app.route('/')
 def home():
-    return render_template('mediaConverter.html')
+    return render_template('index.html')
 
 @app.route('/convert', methods=['POST'])
 def convert_video():

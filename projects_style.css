@@ -80,7 +80,10 @@ body {
     background-size: cover;
 }
 
-.card2 {}
+.card2 {
+    background-image: url(Mp4.png);
+    background-size: cover;
+}
 
 .card3 {}
 
