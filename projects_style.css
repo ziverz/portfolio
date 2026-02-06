@@ -28,7 +28,31 @@ body {
     /* Centers horizontally */
     align-items: center;
     /* centers vertically */
+    min-height: 100vh;
 }
+
+
+.project_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 90%;
+    max-width: 1200px;
+}
+
+.project_card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    min-width: 200px;
+}
+
+.card1 {}
+
+.card2 {}
+
+.card3 {}
 
 iframe {
     width: 100%;
