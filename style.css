@@ -45,7 +45,7 @@ footer {
     margin-right: auto;
 }
 
-.project_cards {
+.home_cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
@@ -56,7 +56,7 @@ footer {
 
 }
 
-.project_card {
+.home_card {
     border: 4px solid rgba(255, 255, 255, 0.1);
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
@@ -68,11 +68,11 @@ footer {
     transition: .5s;
 }
 
-.project_card:hover {
+.home_card:hover {
     transform: scale(1.15)
 }
 
-.project_card:active {
+.home_card:active {
     background: grey;
     transform: translateY(4px);
 }
@@ -82,4 +82,3 @@ footer {
     color: black;
     font-family: "Bungee", sans-serif;
 }
-
