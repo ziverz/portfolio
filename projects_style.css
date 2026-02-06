@@ -14,7 +14,7 @@
 
 
 body {
-    background: var(--gradient-color);
+    background: var(--bg-color);
     background-attachment: fixed;
     font-family: var(--text-font);
     min-height: 100dvh;
@@ -44,11 +44,18 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 200px;
-    min-width: 200px;
+    min-height: 250px;
+    background-color: #fffafa;
+    border: 4px solid darkgreen;
+    border-radius: 20px;
+    text-decoration: none;
+    color: black
 }
 
-.card1 {}
+.card1 {
+    background-image: url(GetBigManImage.png);
+    background-size: cover;
+}
 
 .card2 {}
 
