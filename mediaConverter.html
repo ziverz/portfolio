@@ -13,14 +13,9 @@
         <form action="/convert" method="post" enctype="multipart/form-data">
             <!-- action="convert" tells the form to send the data to url path named /convert  -->
             <label class="upload_button" for="file-upload">
-                Choose MP4 File:
+                Choose MP4 File
             </label>
-            <input type="file" id="file-upload" name="file" accept=".mp4" required>
-            <br><br>
-
-            <button class="submit_button" type="submit">
-                Convert to MP3
-            </button>
+            <input type="file" id="file-upload" name="file" accept=".mp4" required onchange="this.form.submit()">
         </form>
     </section>
 </body>

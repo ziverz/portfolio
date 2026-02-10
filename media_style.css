@@ -25,12 +25,9 @@ body {
     color: var(--text-color);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    /* Centers horizontally */
+    justify-content: center;
     align-items: center;
-    /* centers vertically */
     min-height: 100dvh;
-    /* use dvh instead of vh for better mobile viewing*/
     padding-top: 3vh;
 }
 
@@ -39,9 +36,8 @@ body {
     justify-content: center;
     align-items: center;
     background-color: var(--text-color);
+    margin-bottom: 10vh;
     font-size: 3rem;
-    margin-top: 5rem;
-    margin-bottom: 5rem;
     min-height: 30vh;
     min-width: 50vh;
     background: linear-gradient(to top, rgba(0, 0, 0, 1) 0%, rgba(64, 64, 61, 1) 100%, rgba(20, 20, 20, 1) 0%);
@@ -53,26 +49,6 @@ body {
 }
 
 .upload_button:hover {
-    transform: scale(1.2);
-}
-
-.submit_button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 3.3rem;
-    min-height: 30vh;
-    min-width: 50vh;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(64, 64, 61, 1) 100%, rgba(20, 20, 20, 1) 0%);
-    border: 4px solid black;
-    border-radius: 20px;
-    text-decoration: none;
-    -webkit-text-stroke: 2px black;
-    transition: 1.2s;
-}
-
-.submit_button:hover {
     transform: scale(1.2);
 }
 
