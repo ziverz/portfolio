@@ -7,7 +7,8 @@
 }
 
 body {
-    background: var(--gradient-color);
+    background: var(--bg-color);
+    /* background: var(--gradient-color)  for metallic look */
     background-attachment: fixed;
     font-family: var(--text-font);
     min-height: 100 dvh;
