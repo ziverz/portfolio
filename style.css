@@ -83,3 +83,20 @@ footer {
     color: black;
     font-family: "Bungee", sans-serif;
 }
+
+.aboutme {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.personalphoto {
+    background-image: url(images/zivimage.JPG);
+    scale: 70%;
+    width: 70vh;
+    height: 120vh;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
