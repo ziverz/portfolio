@@ -60,30 +60,34 @@
     </div>
 
     <script>
+        const RSS_URL = 'https://zivcohen.substack.com/feed';
+        const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+
         async function loadArticles() {
             const container = document.getElementById('articles-container');
             const loading = document.getElementById('loading');
 
             try {
-                const res = await fetch('/api/substack-feed');
+                const res = await fetch(API_URL);
                 const data = await res.json();
 
                 loading.remove();
 
-                if (data.error && data.articles.length === 0) {
-                    container.innerHTML = `<p class="feed-error">Couldn't load articles right now. <a href="https://substack.com/@zivcohen" target="_blank">Read on Substack →</a></p>`;
+                if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+                    container.innerHTML = `<p class="feed-error">No articles yet — <a href="https://substack.com/@zivcohen" target="_blank">check Substack →</a></p>`;
                     return;
                 }
 
-                if (data.articles.length === 0) {
-                    container.innerHTML = `<p class="feed-error">No articles yet — check back soon.</p>`;
-                    return;
-                }
-
-                data.articles.forEach((article, i) => {
-                    const date = article.date
-                        ? new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+                data.items.forEach((article, i) => {
+                    const date = article.pubDate
+                        ? new Date(article.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
                         : '';
+
+                    // Strip HTML tags from description for a clean excerpt
+                    const rawExcerpt = article.description.replace(/<[^>]+>/g, '').trim();
+                    const excerpt = rawExcerpt.length > 280
+                        ? rawExcerpt.slice(0, 280) + '...'
+                        : rawExcerpt;
 
                     const card = document.createElement('article');
                     card.className = 'article-card';
@@ -93,7 +97,7 @@
                             ${date ? `<span class="article-date">${date}</span>` : ''}
                         </div>
                         <h2 class="article-title">${article.title}</h2>
-                        ${article.excerpt ? `<p class="article-excerpt">${article.excerpt}</p>` : ''}
+                        ${excerpt ? `<p class="article-excerpt">${excerpt}</p>` : ''}
                         <a href="${article.link}" target="_blank" class="read-more">Read on Substack →</a>
                     `;
                     container.appendChild(card);
