@@ -1,9 +1,13 @@
-# Import the 'os' module to interact with the operating system (file operations like checking if files exist, removing files)
+# Import the 'os' module to interact with the operating system
 import os
+import re
+import xml.etree.ElementTree as ET
+from urllib.request import urlopen
+from urllib.error import URLError
 # Import the 'ffmpeg' library to handle video/audio conversion
 import ffmpeg
-# Import Flask and related functions: Flask (main app), render_template (to serve HTML), request (to handle incoming data), send_file (to send files back to user), after_this_request (to run cleanup after sending response)
-from flask import Flask, render_template, request, send_file, after_this_request
+# Import Flask and related functions
+from flask import Flask, render_template, request, send_file, after_this_request, jsonify
 
 # Create a Flask application instance with custom settings:
 # __name__ tells Flask where to look for resources
@@ -88,6 +92,47 @@ def convert_video():
     # as_attachment=True makes it download instead of playing in browser
     # download_name sets the filename the user will see when downloading
     return send_file(output_path, as_attachment=True, download_name=new_download_name)
+
+# Substack RSS feed proxy — avoids CORS by fetching on the server side
+@app.route('/api/substack-feed')
+def substack_feed():
+    FEED_URL = 'https://zivcohen.substack.com/feed'
+    try:
+        from urllib.request import Request
+        req = Request(FEED_URL, headers={
+            'User-Agent': 'Mozilla/5.0 (compatible; portfolio-rss-reader/1.0)'
+        })
+        with urlopen(req, timeout=8) as response:
+            xml_data = response.read()
+
+        root = ET.fromstring(xml_data)
+        channel = root.find('channel')
+        ns = {'content': 'http://purl.org/rss/1.0/modules/content/'}
+
+        articles = []
+        for item in (channel.findall('item') if channel is not None else [])[:10]:
+            title    = item.findtext('title', '').strip()
+            link     = item.findtext('link',  '').strip()
+            pub_date = item.findtext('pubDate', '').strip()
+            raw_desc = item.findtext('description', '') or ''
+            # Strip HTML tags and trim to a readable excerpt
+            excerpt  = re.sub(r'<[^>]+>', '', raw_desc).strip()[:280]
+            if len(re.sub(r'<[^>]+>', '', raw_desc).strip()) > 280:
+                excerpt += '...'
+
+            articles.append({
+                'title':   title,
+                'link':    link,
+                'date':    pub_date,
+                'excerpt': excerpt
+            })
+
+        return jsonify({'articles': articles})
+
+    except URLError as e:
+        return jsonify({'error': f'Could not reach Substack: {e.reason}', 'articles': []}), 502
+    except Exception as e:
+        return jsonify({'error': str(e), 'articles': []}), 500
 
 # Check if this script is being run directly (not imported as a module)
 if __name__ == '__main__':

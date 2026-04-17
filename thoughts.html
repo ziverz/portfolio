@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ziv Cohen's thoughts — articles about things I'm passionate about.">
+    <title>My Thoughts — Ziv Cohen</title>
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="thoughts_style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:ital,wght@0,100..900;1,100..900&family=Markazi+Text:wght@400..700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav class="site-nav">
+        <a href="index.html" class="nav-brand">Ziv Cohen</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="resume.html">Resume</a></li>
+            <li><a href="thoughts.html" class="active">My Thoughts</a></li>
+        </ul>
+    </nav>
+
+    <div class="page">
+
+        <header class="page-header">
+            <h1 class="page-title">My Thoughts</h1>
+            <p class="page-subtitle">Things I think about. Things that matter to me. Written on <a href="https://substack.com/@zivcohen" target="_blank" class="substack-inline">Substack</a>.</p>
+        </header>
+
+        <main class="articles" id="articles-container">
+            <!-- Articles are loaded dynamically from Substack RSS -->
+            <div class="loading-state" id="loading">
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <a href="https://www.linkedin.com/in/zivcohenku/" target="_blank" aria-label="LinkedIn">
+                <img class="linkedInLogo" src="images/linkedInImage.png" alt="LinkedIn" width="50" height="50">
+            </a>
+            <a href="https://substack.com/@zivcohen" target="_blank" class="substack-icon" aria-label="Substack">
+                <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="50" height="50" rx="10" fill="#FF6719"/>
+                    <rect x="10" y="13" width="30" height="4" rx="1" fill="white"/>
+                    <rect x="10" y="22" width="30" height="4" rx="1" fill="white"/>
+                    <path d="M10 31H40V42L25 35L10 42V31Z" fill="white"/>
+                </svg>
+            </a>
+        </footer>
+
+    </div>
+
+    <script>
+        async function loadArticles() {
+            const container = document.getElementById('articles-container');
+            const loading = document.getElementById('loading');
+
+            try {
+                const res = await fetch('/api/substack-feed');
+                const data = await res.json();
+
+                loading.remove();
+
+                if (data.error && data.articles.length === 0) {
+                    container.innerHTML = `<p class="feed-error">Couldn't load articles right now. <a href="https://substack.com/@zivcohen" target="_blank">Read on Substack →</a></p>`;
+                    return;
+                }
+
+                if (data.articles.length === 0) {
+                    container.innerHTML = `<p class="feed-error">No articles yet — check back soon.</p>`;
+                    return;
+                }
+
+                data.articles.forEach((article, i) => {
+                    const date = article.date
+                        ? new Date(article.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
+                        : '';
+
+                    const card = document.createElement('article');
+                    card.className = 'article-card';
+                    card.id = `article-${i}`;
+                    card.innerHTML = `
+                        <div class="article-meta">
+                            ${date ? `<span class="article-date">${date}</span>` : ''}
+                        </div>
+                        <h2 class="article-title">${article.title}</h2>
+                        ${article.excerpt ? `<p class="article-excerpt">${article.excerpt}</p>` : ''}
+                        <a href="${article.link}" target="_blank" class="read-more">Read on Substack →</a>
+                    `;
+                    container.appendChild(card);
+                });
+
+            } catch (err) {
+                loading.remove();
+                container.innerHTML = `<p class="feed-error">Couldn't load articles right now. <a href="https://substack.com/@zivcohen" target="_blank">Read on Substack →</a></p>`;
+            }
+        }
+
+        loadArticles();
+    </script>
+</body>
+
+</html>

@@ -4,14 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Converter</title>
+    <meta name="description" content="Convert MP4 files to MP3 — fast, local, no nonsense.">
+    <title>Media Converter — Ziv Cohen</title>
     <link rel="stylesheet" href="media_style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
     <section class="hero_section">
         <form action="/convert" method="post" enctype="multipart/form-data">
-            <!-- action="convert" tells the form to send the data to url path named /convert  -->
+            <!-- action="/convert" tells the form to send the data to Flask's /convert route -->
             <label class="upload_button" for="file-upload">
                 Choose MP4 File
             </label>

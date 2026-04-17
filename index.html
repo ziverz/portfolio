@@ -4,68 +4,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Ziv Cohen — Developer, game maker, and builder of things.">
     <title>Ziv Cohen</title>
+    <link rel="stylesheet" href="nav.css">
     <link rel="stylesheet" href="style.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Bungee&family=LXGW+WenKai+Mono+TC&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
-
-
-
-    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet"> -->
-
-
 </head>
 
 <body>
+    <nav class="site-nav">
+        <a href="index.html" class="nav-brand">Ziv Cohen</a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="resume.html">Resume</a></li>
+            <li><a href="thoughts.html">My Thoughts</a></li>
+        </ul>
+    </nav>
     <section class="hero_section">
 
-        <h1 class="name_header">Ziv Cohen</h1>
+
+
+        <div class="aboutme">
+            <div class="personalphoto"></div>
+
+            <div class="aboutme-text">
+                <h2>I'm Ziv!</h2>
+                <p>
+                    I love to work on unique projects that push my thinking capabilities.
+                    I believe that <br>
+                    anything that uses creativity, innovation, and makes me curious is worth working on.
+
+                </p>
+                <p>
+                    <strong><u>My passion</u></strong> is to make people more curious. Curiosity is a value that many people
+                    <br>
+                    nowadays lack in. Yet I think that it is one of the most important qualities any
+                    <br>
+                    person can have.
+                </p>
+            </div>
+        </div>
+
+        <hr class="section-divider">
 
         <div class="home_cards">
 
-
-            <a href="projects.html">
-                <button class="home_card card1">
-                    <h1>
-                        PROJECTS
-                    </h1>
+            <a href="projects.html" style="text-decoration: none;">
+                <button class="home_card card1" id="btn-projects">
+                    <span class="card-icon">🛠️</span>
+                    <span class="card-label">PROJECTS</span>
                 </button>
             </a>
 
-            <button class=" home_card card2">
-                <!-- Content -->
-            </button>
+            <a href="resume.html" style="text-decoration: none;">
+                <button class="home_card card2" id="btn-resume">
+                    <span class="card-icon">📄</span>
+                    <span class="card-label">RESUME</span>
+                </button>
+            </a>
 
-            <button class="home_card card3">
-                <!-- Content -->
-            </button>
-
-        </div>
-
-        <div class="aboutme">
-            <h1>
-                About me
-            </h1>
-            <div class="personalphoto">
-
-            </div>
+            <a href="thoughts.html" style="text-decoration: none;">
+                <button class="home_card card3" id="btn-thoughts">
+                    <span class="card-icon">✍️</span>
+                    <span class="card-label">MY THOUGHTS</span>
+                </button>
+            </a>
 
         </div>
 
         <footer class="footer">
-            <a href="https://www.linkedin.com/in/zivcohenku/" target="_blank">
-                <img class="linkedInLogo" src="images/linkedInImage.png" alt="linkedin" width="50" height="50">
+            <a href="https://www.linkedin.com/in/zivcohenku/" target="_blank" aria-label="LinkedIn">
+                <img class="linkedInLogo" src="images/linkedInImage.png" alt="LinkedIn" width="50" height="50">
+            </a>
+            <a href="https://substack.com/@zivcohen" target="_blank" class="substack-icon" aria-label="Substack">
+                <svg width="44" height="44" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="50" height="50" rx="10" fill="#FF6719"/>
+                    <rect x="10" y="13" width="30" height="4" rx="1" fill="white"/>
+                    <rect x="10" y="22" width="30" height="4" rx="1" fill="white"/>
+                    <path d="M10 31H40V42L25 35L10 42V31Z" fill="white"/>
+                </svg>
             </a>
         </footer>
 
+    </section>
 </body>
 
 </html>
