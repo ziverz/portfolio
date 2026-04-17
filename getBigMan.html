@@ -5,16 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>getBigMan</title>
-
+    <link rel="stylesheet" href="nav.css">
     <link rel="stylesheet" href="projects_style.css">
 </head>
 
-<body style="margin: 0; padding: 0; overflow: hidden; height: 100vh;">
+<body style="margin: 0; padding: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column;">
+    <nav class="site-nav" style="flex-shrink: 0;">
+        <a href="index.html" class="nav-brand">Ziv Cohen</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="projects.html" class="active">Projects</a></li>
+            <li><a href="resume.html">Resume</a></li>
+            <li><a href="thoughts.html">My Thoughts</a></li>
+        </ul>
+    </nav>
     <section class="hero_section"
-        style="margin: 0; padding: 0; height: 100vh; display: flex; align-items: center; justify-content: center;">
+        style="margin: 0; padding: 0; flex: 1; display: flex; align-items: center; justify-content: center; width: 100%;">
 
         <div class="getBigMan">
-            <iframe frameborder="0" src="static/getbigman/index.html" allowfullscreen style="border: none; 
+            <iframe frameborder="0" src="static/GetBigMan/index.html" allowfullscreen style="border: none; 
                            display: block; 
                            margin: 0 auto;
                            width: 90vw !important;
