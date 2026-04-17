@@ -21,14 +21,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: stretch;
-    padding: 2rem;
+    padding: 0;
 }
 
 .resume-frame {
     width: 100%;
-    max-width: 900px;
+    height: 100%;
     border: none;
-    border-radius: 10px;
-    box-shadow: 0 6px 24px rgba(44, 36, 32, 0.18);
-    min-height: calc(100dvh - 120px);
+    min-height: calc(100dvh - 60px); /* fallback height accounting for navbar */
 }
