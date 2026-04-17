@@ -71,7 +71,7 @@
                 const res = await fetch(API_URL);
                 const data = await res.json();
 
-                loading.remove();
+                if (loading) loading.remove();
 
                 if (data.status !== 'ok' || !data.items || data.items.length === 0) {
                     container.innerHTML = `<p class="feed-error">No articles yet — <a href="https://substack.com/@zivcohen" target="_blank">check Substack →</a></p>`;
@@ -83,8 +83,9 @@
                         ? new Date(article.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
                         : '';
 
-                    // Strip HTML tags from description for a clean excerpt
-                    const rawExcerpt = article.description.replace(/<[^>]+>/g, '').trim();
+                    // Strip HTML tags from description for a clean excerpt, safely fallback if description is missing
+                    const description = article.description || article.content || '';
+                    const rawExcerpt = description.replace(/<[^>]+>/g, '').trim();
                     const excerpt = rawExcerpt.length > 280
                         ? rawExcerpt.slice(0, 280) + '...'
                         : rawExcerpt;
@@ -96,16 +97,17 @@
                         <div class="article-meta">
                             ${date ? `<span class="article-date">${date}</span>` : ''}
                         </div>
-                        <h2 class="article-title">${article.title}</h2>
+                        <h2 class="article-title">${article.title || 'Untitled'}</h2>
                         ${excerpt ? `<p class="article-excerpt">${excerpt}</p>` : ''}
-                        <a href="${article.link}" target="_blank" class="read-more">Read on Substack →</a>
+                        <a href="${article.link || '#'}" target="_blank" class="read-more">Read on Substack →</a>
                     `;
                     container.appendChild(card);
                 });
 
             } catch (err) {
-                loading.remove();
-                container.innerHTML = `<p class="feed-error">Couldn't load articles right now. <a href="https://substack.com/@zivcohen" target="_blank">Read on Substack →</a></p>`;
+                console.error("Fetch error details:", err);
+                if (loading) loading.remove();
+                container.innerHTML = `<p class="feed-error">Error loading articles: ${err.message}. <br> <a href="https://substack.com/@zivcohen" target="_blank">Read directly on Substack →</a></p>`;
             }
         }
 
