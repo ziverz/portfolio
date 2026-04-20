@@ -106,28 +106,19 @@ body {
     background-position: center;
 }
 
-/* ── CARD 3: Coming Soon ── */
 .card3 {
-    background-color: #d9ccb8;
-    border: 4px dashed var(--card-border);
-    flex-direction: column;
-    gap: 0.5rem;
+    background-image: url();
+    background-size: cover;
+    background-position: center;
 }
 
-.card3 h1 {
-    background: none;
-    color: var(--muted);
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-    padding: 0;
-    width: auto;
+.card4 {
+    background-image: url();
+    background-size: cover;
+    background-position: center;
 }
 
-.card3-icon {
-    font-size: 2.8rem;
-    z-index: 2;
-    position: relative;
-}
+
 
 /* ── DESCRIPTIONS ── */
 .descriptions {
@@ -153,15 +144,7 @@ body {
     color: var(--muted);
 }
 
-.desc3 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--card-border);
-    font-size: 1rem;
-    font-family: var(--text-font);
-    letter-spacing: 0.08em;
-}
+
 
 /* ── GAME EMBED ── */
 iframe {
