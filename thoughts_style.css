@@ -166,13 +166,15 @@ footer {
 }
 
 .linkedInLogo {
+    display: block;
+    transform: scale(1.15);
     border-radius: 8px;
     transition: transform 0.25s ease, opacity 0.25s ease;
     opacity: 0.85;
 }
 
 .linkedInLogo:hover {
-    transform: scale(1.15);
+    transform: scale(1.3);
     opacity: 1;
 }
 
