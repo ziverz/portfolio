@@ -174,14 +174,16 @@ footer {
     opacity: 1;
 }
 
-.substack-icon svg {
+.substack-icon svg,
+.github-icon svg {
     display: block;
     border-radius: 8px;
     opacity: 0.85;
     transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
-.substack-icon:hover svg {
+.substack-icon:hover svg,
+.github-icon:hover svg {
     transform: scale(1.15);
     opacity: 1;
 }
