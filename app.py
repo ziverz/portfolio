@@ -37,6 +37,10 @@ def thoughts():
 def mediaconverter():
     return render_template('mediaConverter.html')
 
+@app.route('/gameMan')
+def gameman():
+    return render_template('gameMan.html')
+
 # Define a route for '/convert' that only accepts POST requests (form submissions with data)
 @app.route('/convert', methods=['POST'])
 # This function handles the video to MP3 conversion

@@ -1,0 +1,191 @@
+:root {
+    --bg-color: #f5f0e8;
+    --bg-dark: #2c2420;
+    --text-font: "Bungee", sans-serif;
+    --text-font-body: "Markazi Text", serif;
+    font-weight: normal;
+    --text-color: #2c2420;
+    --text-light: #f5f0e8;
+    --accent: #8b5e3c;
+    --accent-dark: #5c3d1e;
+    --card-bg: #ede4d3;
+    --card-border: #c4a882;
+    --muted: #7a6652;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: var(--text-font-body);
+    min-height: 100dvh;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── LAYOUT ── */
+.page {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+/* ── HEADER ── */
+.page-header {
+    padding: 4vh 0 3vh;
+    border-bottom: 2px solid var(--card-border);
+    margin-bottom: 4vh;
+}
+
+.back-link {
+    display: inline-block;
+    font-family: var(--text-font);
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.2rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--accent-dark);
+}
+
+.page-title {
+    font-family: var(--text-font);
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    color: var(--accent-dark);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.6rem;
+}
+
+.page-subtitle {
+    font-size: 1.2rem;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* ── MEDIA HERO ── */
+.media-hero {
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 4px solid var(--card-border);
+    background-color: var(--bg-dark);
+    margin-bottom: 3rem;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(44, 36, 32, 0.15);
+}
+
+.media-hero video,
+.media-hero iframe,
+.media-hero img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ── PROJECT DESCRIPTION ── */
+.project-content {
+    background-color: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 14px;
+    padding: 2.5rem;
+    margin-bottom: 4rem;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--muted);
+}
+
+.project-content p {
+    margin-bottom: 1.5rem;
+}
+
+.project-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* ── GALLERY GRID ── */
+.gallery-section h2 {
+    font-family: var(--text-font);
+    font-size: 1.8rem;
+    color: var(--accent-dark);
+    margin-bottom: 1.5rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 5rem;
+}
+
+.gallery-item {
+    border: 3px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--bg-dark);
+    aspect-ratio: 4 / 3;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(44, 36, 32, 0.14);
+}
+
+.gallery-item img,
+.gallery-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ── FOOTER ── */
+footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 0;
+    border-top: 2px solid var(--card-border);
+    margin-top: auto;
+}
+
+.linkedInLogo {
+    display: block;
+    border-radius: 8px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    opacity: 0.85;
+}
+
+.linkedInLogo:hover {
+    transform: scale(1.15);
+    opacity: 1;
+}
+
+.substack-icon svg,
+.github-icon svg {
+    display: block;
+    border-radius: 8px;
+    opacity: 0.85;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.substack-icon:hover svg,
+.github-icon:hover svg {
+    transform: scale(1.15);
+    opacity: 1;
+}
