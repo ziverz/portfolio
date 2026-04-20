@@ -18,10 +18,24 @@ app = Flask(__name__, template_folder='.', static_folder='.', static_url_path=''
 
 # Define a route for the home page (when someone visits the root URL '/')
 @app.route('/')
-# This function handles requests to the home page
 def home():
-    # Render and return the index.html template to show the main page
     return render_template('index.html')
+
+@app.route('/projects')
+def projects():
+    return render_template('projects.html')
+
+@app.route('/resume')
+def resume():
+    return render_template('resume.html')
+
+@app.route('/thoughts')
+def thoughts():
+    return render_template('thoughts.html')
+
+@app.route('/mediaConverter')
+def mediaconverter():
+    return render_template('mediaConverter.html')
 
 # Define a route for '/convert' that only accepts POST requests (form submissions with data)
 @app.route('/convert', methods=['POST'])
