@@ -7,7 +7,7 @@
     <meta name="description" content="Ziv Cohen — Developer, game maker, and builder of things.">
     <title>Ziv Cohen</title>
     <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1.1">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +31,12 @@
 
 
         <div class="aboutme">
-            <div class="personalphoto"></div>
+            <div class="portrait-puzzle-wrap">
+                <h2 class="puzzle-title" id="puzzle-title">Solve the puzzle!</h2>
+                <p class="puzzle-instructions">Drag the pieces, or tap two to swap them.</p>
+                <div class="portrait-puzzle" id="portrait-puzzle" aria-labelledby="puzzle-title"></div>
+                <p class="puzzle-status" id="puzzle-status" aria-live="polite"></p>
+            </div>
 
             <div class="aboutme-text">
                 <h2>I'm Ziv!</h2>
@@ -109,6 +114,7 @@
         </footer>
 
     </section>
+    <script src="puzzle.js?v=1.1"></script>
 </body>
 
 </html>

@@ -140,16 +140,99 @@ body {
     margin-bottom: 1rem;
 }
 
-.personalphoto {
-    background-image: url(images/zivimage.JPG);
-    width: 280px;
-    height: 380px;
-    background-size: cover;
-    background-position: center top;
-    border-radius: 12px;
-    box-shadow: 4px 6px 20px rgba(44, 36, 32, 0.25);
-    border: 3px solid var(--card-border);
+.portrait-puzzle-wrap {
+    width: 300px;
     flex-shrink: 0;
+    text-align: center;
+}
+
+.puzzle-title {
+    color: var(--accent-dark);
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+}
+
+.puzzle-instructions,
+.puzzle-status {
+    min-height: 1.25rem;
+    color: var(--muted);
+    font-family: var(--text-font-body);
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.puzzle-instructions {
+    margin-bottom: 0.75rem;
+}
+
+.portrait-puzzle {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 3px solid var(--card-border);
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    box-shadow: 4px 6px 20px rgba(44, 36, 32, 0.25);
+}
+
+.puzzle-piece {
+    appearance: none;
+    border: 1px solid rgba(245, 240, 232, 0.9);
+    background-image: url(images/zivimage.JPG);
+    background-repeat: no-repeat;
+    background-size: 200% 300%;
+    cursor: grab;
+    transition: transform 0.18s ease, filter 0.18s ease, border-color 0.18s ease;
+}
+
+.puzzle-piece:nth-child(1),
+.puzzle-piece:nth-child(2) {
+    border-top: 0;
+}
+
+.puzzle-piece:nth-child(odd) {
+    border-left: 0;
+}
+
+.puzzle-piece:nth-child(even) {
+    border-right: 0;
+}
+
+.puzzle-piece:nth-last-child(-n + 2) {
+    border-bottom: 0;
+}
+
+.puzzle-piece:hover,
+.puzzle-piece:focus-visible {
+    filter: brightness(1.08);
+    outline: none;
+    z-index: 2;
+}
+
+.puzzle-piece.is-selected {
+    border: 4px solid var(--accent);
+    filter: brightness(1.12);
+    transform: scale(0.94);
+    z-index: 3;
+}
+
+.puzzle-piece:active {
+    cursor: grabbing;
+}
+
+.portrait-puzzle.is-solved .puzzle-piece {
+    border-color: transparent;
+    cursor: default;
+}
+
+.puzzle-status {
+    margin-top: 0.55rem;
+    color: var(--accent-dark);
+    font-weight: 700;
 }
 
 /* ── FOOTER ── */
@@ -203,8 +286,7 @@ footer {
         align-items: center;
     }
 
-    .personalphoto {
-        width: 80vw;
-        height: 55vw;
+    .portrait-puzzle-wrap {
+        width: min(80vw, 320px);
     }
 }
