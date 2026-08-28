@@ -6,25 +6,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Convert MP4 files to MP3 — fast, local, no nonsense.">
     <title>Media Converter — Ziv Cohen</title>
-    <link rel="stylesheet" href="media_style.css">
 
+    <link rel="stylesheet" href="media_style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <section class="hero_section">
-        <form action="/convert" method="post" enctype="multipart/form-data">
-            <!-- action="/convert" tells the form to send the data to Flask's /convert route -->
-            <label class="upload_button" for="file-upload">
-                Choose MP4 File
-            </label>
-            <input type="file" id="file-upload" name="file" accept=".mp4" required onchange="this.form.submit()">
-        </form>
-    </section>
+    <div class="converter-wrapper">
+        <a href="/" class="home-link">← HOME</a>
+
+        <div class="converter-container">
+            <h1>Media Converter</h1>
+            <p class="subtitle">Convert MP4 to high-quality MP3 directly in your browser.</p>
+
+            <div class="upload-zone" id="drop-zone">
+                <span class="upload-icon">🎵</span>
+                <label class="upload_button" for="file-upload">
+                    Choose MP4 File or Drag & Drop
+                </label>
+                <input type="file" id="file-upload" accept=".mp4">
+            </div>
+
+            <div class="status-container" id="status-container">
+                <p class="status-message" id="status-text">Ready to convert...</p>
+                <div class="progress-wrapper">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="result-container" id="result-container">
+                <span class="success-icon">✅</span>
+                <p>Conversion Complete!</p>
+                <a href="#" class="download-btn" id="download-link">Download MP3</a>
+            </div>
+
+            <div id="error-display" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Load FFmpeg.wasm libraries -->
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/index.js"></script>
+
+    <script>
+        const { FFmpeg } = FFmpegWASM;
+        const { fetchFile, toBlobURL } = FFmpegUtil;
+
+        const CORE_BASE_URL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
+
+        let ffmpeg = null;
+        let downloadUrl = null;
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-upload');
+        const statusContainer = document.getElementById('status-container');
+        const statusText = document.getElementById('status-text');
+        const progressBar = document.getElementById('progress-bar');
+        const resultContainer = document.getElementById('result-container');
+        const downloadLink = document.getElementById('download-link');
+        const errorDisplay = document.getElementById('error-display');
+
+        // Drag and drop handlers
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        async function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.mp4')) {
+                showError('Please select a valid .mp4 file.');
+                return;
+            }
+
+            resetUI();
+            statusContainer.style.display = 'block';
+            setUploadEnabled(false);
+
+            try {
+                await convertToMp3(file);
+            } catch (err) {
+                console.error(err);
+                showError('Conversion failed. Make sure the MP4 contains audio, then try again.');
+            } finally {
+                setUploadEnabled(true);
+                fileInput.value = '';
+            }
+        }
+
+        async function convertToMp3(file) {
+            if (!ffmpeg) {
+                statusText.innerText = 'Initializing converter...';
+                ffmpeg = new FFmpeg();
+
+                ffmpeg.on('progress', ({ progress }) => {
+                    const percentage = Math.max(0, Math.min(100, Math.round(progress * 100)));
+                    progressBar.style.width = `${percentage}%`;
+                    statusText.innerText = `Converting: ${percentage}%`;
+                });
+
+                await ffmpeg.load({
+                    // Host the worker locally and load the core through same-origin blob URLs.
+                    // This works on a static GitHub Pages site without a Flask upload endpoint.
+                    classWorkerURL: new URL('static/ffmpeg/worker.js', window.location.href).href,
+                    coreURL: await toBlobURL(`${CORE_BASE_URL}/ffmpeg-core.js`, 'text/javascript'),
+                    wasmURL: await toBlobURL(`${CORE_BASE_URL}/ffmpeg-core.wasm`, 'application/wasm'),
+                });
+            }
+
+            statusText.innerText = 'Processing file...';
+
+            const inputName = 'input.mp4';
+            const outputName = 'output.mp3';
+
+            try {
+                await ffmpeg.writeFile(inputName, await fetchFile(file));
+                const exitCode = await ffmpeg.exec([
+                    '-i', inputName,
+                    '-vn',
+                    '-acodec', 'libmp3lame',
+                    '-b:a', '192k',
+                    '-y', outputName
+                ]);
+
+                if (exitCode !== 0) {
+                    throw new Error(`FFmpeg exited with code ${exitCode}`);
+                }
+
+                const data = await ffmpeg.readFile(outputName);
+                const mp3Blob = new Blob([data], { type: 'audio/mpeg' });
+
+                if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+                downloadUrl = URL.createObjectURL(mp3Blob);
+
+                downloadLink.href = downloadUrl;
+                downloadLink.download = file.name.replace(/\.[^/.]+$/, '') + '.mp3';
+
+                statusContainer.style.display = 'none';
+                resultContainer.style.display = 'block';
+            } finally {
+                await Promise.allSettled([
+                    ffmpeg.deleteFile(inputName),
+                    ffmpeg.deleteFile(outputName)
+                ]);
+            }
+        }
+
+        function resetUI() {
+            errorDisplay.innerText = '';
+            resultContainer.style.display = 'none';
+            progressBar.style.width = '0%';
+            statusText.innerText = 'Ready...';
+        }
+
+        function showError(msg) {
+            errorDisplay.innerText = msg;
+            statusContainer.style.display = 'none';
+        }
+
+        function setUploadEnabled(enabled) {
+            fileInput.disabled = !enabled;
+            dropZone.classList.toggle('is-busy', !enabled);
+        }
+    </script>
 </body>
 
 </html>
