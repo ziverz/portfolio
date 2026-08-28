@@ -118,6 +118,12 @@ body {
     background-position: center;
 }
 
+.card5 {
+    background-image: url(images/orb/orb-cover.png);
+    background-size: cover;
+    background-position: center;
+}
+
 
 
 /* ── DESCRIPTIONS ── */

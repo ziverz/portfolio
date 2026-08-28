@@ -140,6 +140,21 @@ body {
     color: var(--accent-dark);
 }
 
+.source-link {
+    display: inline-block;
+    margin-top: 0.9rem;
+    color: var(--accent);
+    font-family: var(--text-font);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.source-link:hover {
+    color: var(--accent-dark);
+}
+
 .project-content > :last-child {
     margin-bottom: 0;
 }

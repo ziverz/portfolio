@@ -45,6 +45,10 @@ def gameman():
 def vr_robot_arm():
     return render_template('vrRobotArm.html')
 
+@app.route('/orb')
+def orb():
+    return render_template('orb.html')
+
 # Define a route for '/convert' that only accepts POST requests (form submissions with data)
 @app.route('/convert', methods=['POST'])
 # This function handles the video to MP3 conversion
