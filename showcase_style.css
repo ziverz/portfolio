@@ -114,7 +114,41 @@ body {
     margin-bottom: 1.5rem;
 }
 
-.project-content p:last-child {
+.project-content h2 {
+    margin: 2.2rem 0 0.8rem;
+    color: var(--accent-dark);
+    font-family: var(--text-font);
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+}
+
+.project-content h2:first-child {
+    margin-top: 0;
+}
+
+.project-content code {
+    padding: 0.08em 0.3em;
+    border-radius: 4px;
+    background-color: rgba(139, 94, 60, 0.12);
+    color: var(--accent-dark);
+    font-size: 0.88em;
+}
+
+.project-content .project-takeaway {
+    margin-top: 2rem;
+    padding: 1.2rem 1.4rem;
+    border-left: 5px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.project-content .project-takeaway strong {
+    color: var(--accent-dark);
+}
+
+.project-content > :last-child {
     margin-bottom: 0;
 }
 

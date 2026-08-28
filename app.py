@@ -41,6 +41,10 @@ def mediaconverter():
 def gameman():
     return render_template('gameMan.html')
 
+@app.route('/vrRobotArm')
+def vr_robot_arm():
+    return render_template('vrRobotArm.html')
+
 # Define a route for '/convert' that only accepts POST requests (form submissions with data)
 @app.route('/convert', methods=['POST'])
 # This function handles the video to MP3 conversion
