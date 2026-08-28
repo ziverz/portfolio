@@ -30,3 +30,50 @@ body {
     border: none;
     min-height: calc(100dvh - 60px); /* fallback height accounting for navbar */
 }
+
+.resume-actions {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .resume-page {
+        flex-direction: column;
+        padding: 1rem 0 0;
+    }
+
+    .resume-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.65rem;
+        padding: 0 1rem 1rem;
+        color: #7a6652;
+        font-family: "Roboto", sans-serif;
+        text-align: center;
+    }
+
+    .resume-actions p {
+        width: 100%;
+        font-size: 0.9rem;
+        line-height: 1.45;
+    }
+
+    .resume-actions a {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        padding: 0.65rem 0.85rem;
+        border: 2px solid #8b5e3c;
+        border-radius: 8px;
+        background: #ede4d3;
+        color: #5c3d1e;
+        font-family: "Bungee", sans-serif;
+        font-size: 0.65rem;
+        text-decoration: none;
+    }
+
+    .resume-frame {
+        min-height: 70dvh;
+    }
+}

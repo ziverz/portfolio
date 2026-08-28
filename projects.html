@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Ziv Cohen's projects — games, tools, and more.">
     <title>Projects — Ziv Cohen</title>
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="projects_style.css?v=1.2">
+    <link rel="stylesheet" href="nav.css?v=1.1">
+    <link rel="stylesheet" href="projects_style.css?v=1.3">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,74 +30,65 @@
 
         <h1 class="header">My Projects</h1>
 
-        <div class="project_cards">
+        <div class="project-grid">
+            <article class="project-entry">
+                <a href="https://ziverz.itch.io/get-big-man" target="_blank" rel="noopener noreferrer"
+                    class="project_card card1" id="card-getbigman">
+                    <h2>Get Big, Man</h2>
+                </a>
+                <div class="description">
+                    <p>"Get Big, Man" captures the pressure people feel when starting out at the gym. We made this game
+                        to empower anyone who struggles with the mental side of just showing up. All the art, animations,
+                        music, and code were made by us from scratch.</p>
+                    <strong>Unity, C#</strong>
+                </div>
+            </article>
 
-            <a href="https://ziverz.itch.io/get-big-man" target="_blank" class="project_card card1" id="card-getbigman">
-                <h1>Get Big, Man</h1>
-            </a>
+            <article class="project-entry">
+                <a href="/mediaConverter" class="project_card card2" id="card-mediaconverter">
+                    <h2>Media Converter</h2>
+                </a>
+                <div class="description">
+                    <p>I got tired of shady online MP4-to-MP3 converters, so I made my own. Upload an MP4, get an MP3.
+                        Clean and simple. Yes, I made the cover art too. How'd you know?</p>
+                    <strong>HTML, CSS, Flask, Python, FFmpeg</strong>
+                </div>
+            </article>
 
-            <a href="/mediaConverter" class="project_card card2" id="card-mediaconverter">
-                <h1>Media Converter</h1>
-            </a>
+            <article class="project-entry">
+                <a href="/vrRobotArm" class="project_card card3" id="card-vr-robot">
+                    <h2>VR Teleoperated 6 DOF Robot Arm</h2>
+                </a>
+                <div class="description">
+                    <p>A low-latency teleoperation system that maps Meta Quest 3 controller data to a physical 6 DOF
+                        robot arm in mixed reality. A Raspberry Pi translates the virtual twin's coordinates into precise
+                        physical movement using inverse kinematics.</p>
+                    <strong>Python, Raspberry Pi, UDP, SOLIDWORKS, XR</strong>
+                </div>
+            </article>
 
-            <a href="/vrRobotArm" class="project_card card3" id="card-vr-robot">
-                <h1>VR Teleoperated 6 DOF Robot Arm</h1>
-            </a>
-        </div>
+            <article class="project-entry">
+                <a href="/gameMan" class="project_card card4" id="card-gameman">
+                    <h2>GameMAN</h2>
+                </a>
+                <div class="description">
+                    <p>GameMAN converts an average telephone into a gaming console. Instead of picking up the phone to
+                        talk, you pick it up as the controller for the custom GameMAN system.</p>
+                    <strong>Python, Raspberry Pi, Arduino, RetroPie</strong>
+                </div>
+            </article>
 
-        <div class="descriptions">
-            <div class="description desc1">
-                "Get Big, Man" captures the pressure people feel when starting out at the gym.
-                We made this game to empower anyone who struggles with the mental side of just showing up.
-                All the art, animations, music, and code was made by us from scratch.
-                <br>
-                <br>
-                <br>
-                <strong>Unity, C#</strong>
-            </div>
-            <div class="description desc2">
-                I got tired of shady online MP4-to-MP3 converters, so I made my own.
-                Upload an MP4, get an MP3. Clean and simple.
-                <br><br>
-                Yes, I made the cover art too. How'd you know?
-                <br><br><br>
-                <strong>HTML, CSS, Flask, Python, FFmpeg</strong>
-            </div>
-            <div class="description desc3">
-                A low-latency teleoperation system that maps real-time Meta Quest 3
-                controller data to a physical 6 DOF robot arm while being in mixed reality. Utilizing a Raspberry Pi
-                and Python socket communication, the project translates controller coordinates
-                into precise physical movement via inverse kinematics.
-                <br>
-                <strong>Python, Raspberry Pi, UDP, SOLIDWORKS, XR</strong>
-            </div>
-        </div>
-
-        <div class="project_cards">
-            <a href="/gameMan" style="text-decoration: none;" class="project_card card4" id="card-gameman">
-                <h1>GameMAN</h1>
-            </a>
-
-            <a href="/orb" style="text-decoration: none;" class="project_card card5" id="card-orb">
-                <h1>Omnidirectional Rolling Bot (ORB)</h1>
-            </a>
-        </div>
-
-        <div class="descriptions">
-            <div class="description desc4">
-                GameMAN converts your average telephone call into an incredibly fun gaming experience.
-                Rather than picking up the phone to talk to someone, you pick it up as a controller for
-                the super awesome GameMAN console.
-                <br>
-                <strong>Python, Raspberry Pi, Arduino, RetroPie</strong>
-            </div>
-
-            <div class="description desc5">
-                A 4th-place, spherical FPV robot built for remote inspection in places that are unsafe or difficult
-                for people to reach. Its internally stabilized chassis uses three omni wheels for multidirectional control.
-                <br>
-                <strong>Python, Raspberry Pi, Motor Control, FPV, Omni Wheels</strong>
-            </div>
+            <article class="project-entry">
+                <a href="/orb" class="project_card card5" id="card-orb">
+                    <h2>Omnidirectional Rolling Bot (ORB)</h2>
+                </a>
+                <div class="description">
+                    <p>A 4th-place spherical FPV robot built for remote inspection in places that are unsafe or difficult
+                        for people to reach. Its internally stabilized chassis uses three omni wheels for multidirectional
+                        control.</p>
+                    <strong>Python, Raspberry Pi, Motor Control, FPV, Omni Wheels</strong>
+                </div>
+            </article>
         </div>
 
     </div>

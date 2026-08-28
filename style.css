@@ -186,6 +186,7 @@ body {
     background-repeat: no-repeat;
     background-size: 200% 300%;
     cursor: grab;
+    touch-action: manipulation;
     transition: transform 0.18s ease, filter 0.18s ease, border-color 0.18s ease;
 }
 
@@ -277,16 +278,73 @@ footer {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 700px) {
+    .hero_section {
+        padding-top: 2rem;
+    }
+
     .home_cards {
         grid-template-columns: 1fr;
+        gap: 1rem;
+        width: calc(100% - 2rem);
+        margin-bottom: 3rem;
+    }
+
+    .home_card {
+        min-height: 112px;
+        height: auto;
+        padding: 1.25rem 1rem;
     }
 
     .aboutme {
         flex-direction: column;
         align-items: center;
+        gap: 2rem;
+        width: calc(100% - 2rem);
+        margin-bottom: 3rem;
     }
 
     .portrait-puzzle-wrap {
-        width: min(80vw, 320px);
+        width: min(78vw, 300px);
+    }
+
+    .puzzle-instructions,
+    .puzzle-status {
+        font-size: 0.9rem;
+    }
+
+    .aboutme-text {
+        min-width: 0;
+        width: 100%;
+        text-align: left;
+    }
+
+    .aboutme-text h2,
+    .aboutme-text h3 {
+        text-align: center;
+    }
+
+    .aboutme-text h3 {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    .aboutme-text p {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .aboutme-text br {
+        display: none;
+    }
+
+    .section-divider {
+        width: calc(100% - 2rem);
+        margin-bottom: 3rem;
+    }
+
+    footer {
+        justify-content: center;
+        padding: 1.5rem max(1rem, env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
     }
 }

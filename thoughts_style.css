@@ -245,3 +245,58 @@ footer {
 .feed-error a:hover {
     text-decoration: underline;
 }
+
+@media (max-width: 700px) {
+    .page {
+        width: calc(100% - 1.5rem);
+    }
+
+    .page-header {
+        padding: 1.75rem 0 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+        font-size: clamp(1.8rem, 10vw, 2.6rem);
+        line-height: 1.2;
+    }
+
+    .page-subtitle {
+        font-size: 1.02rem;
+    }
+
+    .articles {
+        gap: 1rem;
+    }
+
+    .article-card {
+        padding: 1.2rem 1rem;
+        border-radius: 10px;
+    }
+
+    .article-meta {
+        flex-wrap: wrap;
+    }
+
+    .article-title {
+        font-size: 1.05rem;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .article-excerpt {
+        font-size: 1.02rem;
+        line-height: 1.6;
+    }
+
+    .read-more {
+        display: inline-block;
+        padding: 0.35rem 0;
+        font-size: 0.72rem;
+    }
+
+    footer {
+        justify-content: center;
+        padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    }
+}
