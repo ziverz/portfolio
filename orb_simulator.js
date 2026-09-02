@@ -5,12 +5,22 @@
     const resetButton = document.getElementById('reset-orb');
     const status = document.getElementById('live-status');
     const mode = document.getElementById('orb-mode');
+    const finishOverlay = document.getElementById('finish-overlay');
+    const finishTime = document.getElementById('finish-time');
+    const scoreForm = document.getElementById('score-form');
+    const playerName = document.getElementById('player-name');
+    const saveScore = document.getElementById('save-score');
+    const scoreMessage = document.getElementById('score-message');
+    const playAgain = document.getElementById('play-again');
+    const leaderboardList = document.getElementById('leaderboard-list');
     const wheelLabels = [
         document.getElementById('wheel-a'),
         document.getElementById('wheel-b'),
         document.getElementById('wheel-c')
     ];
     const controlButtons = [...document.querySelectorAll('[data-control]')];
+    const courseProgress = document.getElementById('course-progress');
+    const courseTime = document.getElementById('course-time');
 
     if (!window.THREE) {
         status.textContent = 'The virtual ORB could not load. It is probably hiding under a couch.';
@@ -19,9 +29,9 @@
 
     const { THREE } = window;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(7.5, 6.2, 9);
-    camera.lookAt(0, 0.2, 0);
+    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 100);
+    camera.position.set(20, 16.5, 22);
+    camera.lookAt(0, 0, 0);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -40,18 +50,125 @@
     scene.add(fillLight);
 
     const floor = new THREE.Mesh(
-        new THREE.CircleGeometry(5.7, 80),
+        new THREE.CircleGeometry(18.5, 96),
         new THREE.MeshStandardMaterial({ color: 0xcdbb9d, roughness: 0.96 })
     );
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    const grid = new THREE.GridHelper(10, 20, 0x9a7355, 0xb99e7c);
+    const grid = new THREE.GridHelper(35, 70, 0x9a7355, 0xb99e7c);
     grid.position.y = 0.012;
     grid.material.transparent = true;
     grid.material.opacity = 0.38;
     scene.add(grid);
+
+    const course = new THREE.Group();
+    // The ORB is a 3.36-unit ball, so this course is deliberately built at
+    // full robot scale rather than at tiny tabletop-prop scale.
+    const courseScale = 2;
+    course.scale.setScalar(courseScale);
+    scene.add(course);
+    const obstacleColliders = [];
+    const checkpoints = [];
+    const boundary = 7.15 * courseScale;
+    const orbRadius = 0.52;
+    const finishPosition = new THREE.Vector2(-4.9 * courseScale, 4.85 * courseScale);
+    const checkpointMaterial = new THREE.MeshStandardMaterial({ color: 0xe2a83b, emissive: 0x8a4d00, emissiveIntensity: 0.5, roughness: 0.42 });
+    const collectedMaterial = new THREE.MeshStandardMaterial({ color: 0x5cc9a7, emissive: 0x1f9b73, emissiveIntensity: 1.25, roughness: 0.3 });
+
+    function addBarrier(x, z, width, depth, height = 0.62) {
+        const barrier = new THREE.Group();
+        const body = new THREE.Mesh(
+            new THREE.BoxGeometry(width, height, depth),
+            new THREE.MeshStandardMaterial({ color: 0xa96f43, roughness: 0.72 })
+        );
+        body.position.y = height / 2;
+        body.castShadow = true;
+        body.receiveShadow = true;
+        barrier.add(body);
+        const stripe = new THREE.Mesh(
+            new THREE.BoxGeometry(width + 0.02, 0.1, depth + 0.025),
+            new THREE.MeshStandardMaterial({ color: 0xf1c65c, roughness: 0.55 })
+        );
+        stripe.position.y = height * 0.72;
+        barrier.add(stripe);
+        barrier.position.set(x, 0, z);
+        course.add(barrier);
+        obstacleColliders.push({ type: 'box', x: x * courseScale, z: z * courseScale, width: width * courseScale, depth: depth * courseScale });
+    }
+
+    function addCone(x, z) {
+        const cone = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.31, 0.08, 16), new THREE.MeshStandardMaterial({ color: 0xd65a31, roughness: 0.58 }));
+        base.position.y = 0.04;
+        const top = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.55, 18), new THREE.MeshStandardMaterial({ color: 0xe77533, roughness: 0.5 }));
+        top.position.y = 0.33;
+        const band = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.165, 0.09, 18), new THREE.MeshStandardMaterial({ color: 0xf8eee0, roughness: 0.55 }));
+        band.position.y = 0.37;
+        cone.add(base, top, band);
+        cone.position.set(x, 0, z);
+        course.add(cone);
+        obstacleColliders.push({ type: 'circle', x: x * courseScale, z: z * courseScale, radius: 0.3 * courseScale });
+    }
+
+    function addCheckpoint(x, z, number) {
+        const checkpoint = new THREE.Group();
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.9, 0.09, 10, 36), checkpointMaterial.clone());
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.y = 0.09;
+        ring.castShadow = true;
+        checkpoint.add(ring);
+        const marker = new THREE.Mesh(
+            new THREE.CircleGeometry(0.62, 24),
+            new THREE.MeshBasicMaterial({ color: 0xf3c96a, transparent: true, opacity: 0.3, side: THREE.DoubleSide })
+        );
+        marker.rotation.x = -Math.PI / 2;
+        marker.position.y = 0.025;
+        checkpoint.add(marker);
+        checkpoint.position.set(x, 0, z);
+        course.add(checkpoint);
+        checkpoints.push({ checkpoint, ring, marker, x: x * courseScale, z: z * courseScale, number, collected: false });
+    }
+
+    function addFinishGate(x, z) {
+        const gate = new THREE.Group();
+        const green = new THREE.MeshStandardMaterial({ color: 0x2d8b68, emissive: 0x0d482f, emissiveIntensity: 0.5, roughness: 0.43 });
+        [-1.1, 1.1].forEach((offset) => {
+            const post = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.13, 1.35, 14), green);
+            post.position.set(offset, 0.675, 0);
+            post.castShadow = true;
+            gate.add(post);
+        });
+        const beam = new THREE.Mesh(new THREE.BoxGeometry(2.55, 0.25, 0.24), green);
+        beam.position.y = 1.3;
+        gate.add(beam);
+        const finishGlow = new THREE.PointLight(0x58d6a3, 1.4, 4);
+        finishGlow.position.y = 1.05;
+        gate.add(finishGlow);
+        gate.position.set(x, 0, z);
+        course.add(gate);
+    }
+
+    // A small, intentionally overbuilt training course for a tiny, very determined robot.
+    addBarrier(-4.8, -5.25, 3.3, 0.28);
+    addBarrier(-0.4, -5.25, 3.8, 0.28);
+    addBarrier(4.8, -5.15, 2.7, 0.28);
+    addBarrier(-5.55, -1.25, 0.35, 3.2);
+    addBarrier(1.05, -1.05, 2.55, 0.3);
+    addBarrier(4.45, 0.55, 0.3, 2.75);
+    addBarrier(-1.85, 3.15, 3.2, 0.3);
+    addBarrier(2.55, 4.3, 2.4, 0.3);
+    addCone(-2.8, -2.35);
+    addCone(-1.7, -3.15);
+    addCone(-0.6, -2.3);
+    addCone(2.6, -3.7);
+    addCone(3.45, -2.85);
+    addCone(2.55, -2.0);
+    addCheckpoint(-3.7, -3.7, 1);
+    addCheckpoint(2.55, -3.0, 2);
+    addCheckpoint(3.1, 2.55, 3);
+    addFinishGate(finishPosition.x, finishPosition.y);
 
     const orbRoot = new THREE.Group();
     orbRoot.position.y = 1.72;
@@ -186,6 +303,11 @@
     let lastTime = performance.now();
     let lastMotionAt = 0;
     let lastBoundaryAt = 0;
+    let lastCollisionAt = 0;
+    let runStartedAt = null;
+    let elapsedBeforeCompletion = 0;
+    let completed = false;
+    let scoreSaved = false;
     const tempDirection = new THREE.Vector3();
 
     function setStatus(message) {
@@ -214,11 +336,121 @@
         return wheelSpeed;
     }
 
+    function formatTime(timeInSeconds) {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = (timeInSeconds % 60).toFixed(1).padStart(4, '0');
+        return `${String(minutes).padStart(2, '0')}:${seconds}`;
+    }
+
+    function renderLeaderboard(entries) {
+        leaderboardList.replaceChildren();
+        if (!entries.length) {
+            const empty = document.createElement('li');
+            empty.className = 'leaderboard-empty';
+            empty.textContent = 'No runs yet. The ORB demands a first legend.';
+            leaderboardList.append(empty);
+            return;
+        }
+
+        entries.forEach((entry, index) => {
+            const item = document.createElement('li');
+            const rank = document.createElement('span');
+            rank.className = 'leaderboard-rank';
+            rank.textContent = `#${index + 1}`;
+            const name = document.createElement('span');
+            name.className = 'leaderboard-name';
+            name.textContent = entry.name;
+            const time = document.createElement('span');
+            time.className = 'leaderboard-time';
+            time.textContent = formatTime(Number(entry.time));
+            item.append(rank, name, time);
+            leaderboardList.append(item);
+        });
+    }
+
+    async function loadLeaderboard() {
+        try {
+            const response = await fetch('/api/orb-leaderboard');
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Could not load the leaderboard.');
+            renderLeaderboard(data.entries || []);
+        } catch (error) {
+            leaderboardList.replaceChildren();
+            const empty = document.createElement('li');
+            empty.className = 'leaderboard-empty';
+            empty.textContent = 'Leaderboard temporarily hiding under the couch.';
+            leaderboardList.append(empty);
+        }
+    }
+
+    function updateCourseUi(now = performance.now()) {
+        const collected = checkpoints.filter(({ collected: isCollected }) => isCollected).length;
+        courseProgress.textContent = `${collected} / ${checkpoints.length}`;
+        const elapsed = completed
+            ? elapsedBeforeCompletion
+            : (runStartedAt ? (now - runStartedAt) / 1000 : 0);
+        courseTime.textContent = formatTime(elapsed);
+    }
+
+    function resetCourse() {
+        completed = false;
+        scoreSaved = false;
+        elapsedBeforeCompletion = 0;
+        runStartedAt = active ? performance.now() : null;
+        finishOverlay.hidden = true;
+        scoreForm.reset();
+        scoreMessage.textContent = '';
+        saveScore.disabled = false;
+        checkpoints.forEach((checkpoint) => {
+            checkpoint.collected = false;
+            checkpoint.ring.material.copy(checkpointMaterial);
+            checkpoint.marker.material.color.set(0xf3c96a);
+            checkpoint.marker.material.opacity = 0.3;
+        });
+        updateCourseUi();
+    }
+
+    function collidesAt(x, z) {
+        if (x < -boundary || x > boundary || z < -boundary || z > boundary) return 'boundary';
+        const obstacle = obstacleColliders.find((item) => {
+            if (item.type === 'circle') return Math.hypot(x - item.x, z - item.z) < item.radius + orbRadius;
+            const nearestX = THREE.MathUtils.clamp(x, item.x - item.width / 2, item.x + item.width / 2);
+            const nearestZ = THREE.MathUtils.clamp(z, item.z - item.depth / 2, item.z + item.depth / 2);
+            return Math.hypot(x - nearestX, z - nearestZ) < orbRadius;
+        });
+        return obstacle ? 'obstacle' : '';
+    }
+
+    function checkCourseProgress(now) {
+        checkpoints.forEach((checkpoint) => {
+            if (checkpoint.collected || Math.hypot(orbRoot.position.x - checkpoint.x, orbRoot.position.z - checkpoint.z) > 1.7) return;
+            checkpoint.collected = true;
+            checkpoint.ring.material.copy(collectedMaterial);
+            checkpoint.marker.material.color.set(0x52d3a0);
+            checkpoint.marker.material.opacity = 0.48;
+            const current = checkpoints.filter(({ collected: isCollected }) => isCollected).length;
+            setStatus(`BEACON ${checkpoint.number} ACQUIRED. ${current}/${checkpoints.length} shiny rings collected.`);
+        });
+
+        const allCollected = checkpoints.every(({ collected: isCollected }) => isCollected);
+        if (allCollected && !completed) {
+            completed = true;
+            elapsedBeforeCompletion = (now - runStartedAt) / 1000;
+            mode.textContent = 'COURSE CLEAR';
+            finishTime.textContent = formatTime(elapsedBeforeCompletion);
+            finishOverlay.hidden = false;
+            setStatus('COURSE CLEAR! The timer is frozen. Put your name in the Hall of Roll.');
+        }
+        updateCourseUi(now);
+    }
+
     function resetOrb() {
         orbRoot.position.set(0, 1.72, 0);
         shell.rotation.set(0, 0, 0);
         chassis.rotation.set(0, 0, 0);
         pointer.visible = false;
+        resetCourse();
+        if (active) mode.textContent = 'COURSE LIVE';
         setStatus('ORB returned to the middle. It missed you for exactly 0.2 seconds.');
     }
 
@@ -232,13 +464,44 @@
         active = true;
         launchOverlay.classList.add('is-hidden');
         setControlEnabled(true);
-        mode.textContent = 'ROLLING';
-        setStatus('ORB online. It has not asked for snacks yet. Drive responsibly-ish.');
+        resetCourse();
+        mode.textContent = 'COURSE LIVE';
+        setStatus('Course online. Collect 3 beacons, dodge the props, then claim your Hall of Roll spot.');
     }
 
     launchButton.addEventListener('click', activateOrb);
     resetButton.addEventListener('click', resetOrb);
+    playAgain.addEventListener('click', resetOrb);
+    scoreForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!completed || scoreSaved) return;
+
+        const name = playerName.value.trim();
+        if (!name) {
+            scoreMessage.textContent = 'The Hall of Roll needs a name.';
+            return;
+        }
+
+        saveScore.disabled = true;
+        scoreMessage.textContent = 'Checking the official tiny-robot records…';
+        try {
+            const response = await fetch('/api/orb-leaderboard', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, time: elapsedBeforeCompletion })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || 'Could not save that run.');
+            scoreSaved = true;
+            scoreMessage.textContent = 'Saved! The ORB is quietly impressed.';
+            renderLeaderboard(data.entries || []);
+        } catch (error) {
+            scoreMessage.textContent = error.message || 'Could not save that run.';
+            saveScore.disabled = false;
+        }
+    });
     setControlEnabled(false);
+    loadLeaderboard();
 
     controlButtons.forEach((button) => {
         const control = button.dataset.control;
@@ -261,6 +524,8 @@
     window.addEventListener('keydown', (event) => {
         const key = event.key.toLowerCase();
         if (!['w', 'a', 's', 'd', 'q', 'e', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(key)) return;
+        const target = event.target;
+        if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || target?.isContentEditable) return;
         if (active) {
             event.preventDefault();
             keys.add(key);
@@ -284,19 +549,27 @@
     function animate(now) {
         const delta = Math.min((now - lastTime) / 1000, 0.05);
         lastTime = now;
-        const input = active ? inputValue() : { x: 0, z: 0, turn: 0 };
+        const input = active && !completed ? inputValue() : { x: 0, z: 0, turn: 0 };
         const moving = Math.abs(input.x) + Math.abs(input.z) + Math.abs(input.turn) > 0;
         const wheelSpeeds = updateTelemetry(input);
 
         if (moving) {
             const length = Math.hypot(input.x, input.z) || 1;
             const speed = 1.3 * delta;
-            orbRoot.position.x += (input.x / length) * speed;
-            orbRoot.position.z += (input.z / length) * speed;
-            orbRoot.position.x = THREE.MathUtils.clamp(orbRoot.position.x, -3.75, 3.75);
-            orbRoot.position.z = THREE.MathUtils.clamp(orbRoot.position.z, -3.75, 3.75);
-            shell.rotation.z += (input.x / length) * speed * 0.82;
-            shell.rotation.x -= (input.z / length) * speed * 0.82;
+            const nextX = orbRoot.position.x + (input.x / length) * speed;
+            const nextZ = orbRoot.position.z + (input.z / length) * speed;
+            const collision = collidesAt(nextX, nextZ);
+            if (!collision) {
+                orbRoot.position.x = nextX;
+                orbRoot.position.z = nextZ;
+                shell.rotation.z += (input.x / length) * speed * 0.82;
+                shell.rotation.x -= (input.z / length) * speed * 0.82;
+            } else if (now - lastCollisionAt > 900) {
+                setStatus(collision === 'boundary'
+                    ? 'Virtual wall reached. No drywall was harmed.'
+                    : 'ORB bonked the obstacle. The obstacle is acting very smug.');
+                lastCollisionAt = now;
+            }
             shell.rotation.y += input.turn * delta * 1.7;
             tempDirection.set(input.x, 0, input.z).normalize();
             pointer.position.set(orbRoot.position.x, 2.25, orbRoot.position.z);
@@ -314,10 +587,6 @@
                 lastMotionAt = now;
             }
 
-            if ((Math.abs(orbRoot.position.x) >= 3.74 || Math.abs(orbRoot.position.z) >= 3.74) && now - lastBoundaryAt > 1800) {
-                setStatus('Virtual wall reached. No drywall was harmed.');
-                lastBoundaryAt = now;
-            }
         } else {
             shell.rotation.y += delta * (active ? 0.08 : 0.17);
             pointer.visible = false;
@@ -326,6 +595,7 @@
         chassis.position.y = -0.22 + Math.sin(now * 0.0022) * 0.025;
         chassis.rotation.z = THREE.MathUtils.lerp(chassis.rotation.z, input.x * -0.08, 0.05);
         chassis.rotation.x = THREE.MathUtils.lerp(chassis.rotation.x, input.z * 0.08, 0.05);
+        if (active) checkCourseProgress(now);
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
     }

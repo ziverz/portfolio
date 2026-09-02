@@ -35,6 +35,7 @@ body {
 .control-heading h2,
 .control-heading p,
 .telemetry-panel h2,
+.course-panel h2,
 .how-it-works h2,
 .launch-kicker,
 .launch-button,
@@ -84,7 +85,7 @@ body {
 
 .simulator-stage {
     position: relative;
-    min-height: 560px;
+    min-height: 640px;
     overflow: hidden;
     background:
         radial-gradient(circle at 48% 38%, rgba(245, 240, 232, 0.95), rgba(214, 200, 176, 0.8) 54%, rgba(139, 94, 60, 0.22));
@@ -149,6 +150,90 @@ body {
     transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
 }
 
+.finish-overlay {
+    position: absolute;
+    z-index: 6;
+    top: 50%;
+    left: 50%;
+    width: min(470px, calc(100% - 2rem));
+    padding: 1.55rem;
+    transform: translate(-50%, -50%);
+    border: 3px solid var(--electric);
+    border-radius: 16px;
+    background: rgba(245, 240, 232, 0.96);
+    box-shadow: 0 14px 34px rgba(44, 36, 32, 0.26);
+    text-align: center;
+}
+
+.finish-overlay h2 {
+    margin: 0;
+    color: var(--electric);
+    font-family: "Bungee", sans-serif;
+    font-size: clamp(1.25rem, 4vw, 1.8rem);
+}
+
+.finish-overlay > p:not(.launch-kicker):not(.score-message) {
+    margin: 0.6rem 0 1rem;
+    color: var(--muted);
+    font-size: 1.1rem;
+}
+
+.finish-overlay[hidden] { display: none; }
+
+.score-form label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--accent-dark);
+    font-family: "Roboto", sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.score-entry {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.score-entry input {
+    min-width: 0;
+    flex: 1;
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    background: #fffaf0;
+    color: var(--ink);
+    font-family: "Bungee", sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    padding: 0.75rem;
+}
+
+.score-entry input:focus-visible {
+    border-color: var(--electric);
+    outline: 2px solid rgba(29, 107, 93, 0.25);
+}
+
+.score-entry .launch-button { font-size: 0.58rem; }
+
+.score-message {
+    min-height: 1.1rem;
+    margin: 0.65rem 0 0;
+    color: var(--electric);
+    font-family: "Roboto", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.try-again-button {
+    margin-top: 0.45rem;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: "Bungee", sans-serif;
+    font-size: 0.59rem;
+    text-decoration: underline;
+}
+
 .launch-overlay.is-hidden {
     visibility: hidden;
     opacity: 0;
@@ -203,7 +288,7 @@ body {
 
 .simulator-bottom {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 0.4fr) minmax(215px, 0.48fr);
     gap: 1.25rem;
     padding: 1.25rem;
     border-top: 3px solid var(--line);
@@ -211,7 +296,8 @@ body {
 }
 
 .control-panel,
-.telemetry-panel {
+.telemetry-panel,
+.course-panel {
     padding: 1.1rem;
     border: 2px solid var(--line);
     border-radius: 12px;
@@ -228,6 +314,7 @@ body {
 
 .control-heading h2,
 .telemetry-panel h2,
+.course-panel h2,
 .how-it-works h2 {
     margin: 0;
     color: var(--accent-dark);
@@ -316,7 +403,15 @@ body {
     transform: translateY(-2px);
 }
 
-.telemetry-panel h2 { margin-bottom: 0.75rem; }
+.telemetry-panel h2,
+.course-panel h2 { margin-bottom: 0.75rem; }
+
+.course-panel p {
+    margin: 0 0 0.7rem;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.2;
+}
 
 .telemetry-row {
     display: flex;
@@ -333,6 +428,86 @@ body {
     color: var(--accent-dark);
     font-family: "Bungee", sans-serif;
     font-size: 0.65rem;
+}
+
+.leaderboard-panel {
+    grid-column: 1 / -1;
+    padding: 1.1rem;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: rgba(245, 240, 232, 0.72);
+}
+
+.leaderboard-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+}
+
+.leaderboard-heading h2 {
+    margin: 0;
+    color: var(--accent-dark);
+    font-family: "Bungee", sans-serif;
+    font-size: 0.84rem;
+    letter-spacing: 0.04em;
+}
+
+.leaderboard-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.98rem;
+}
+
+.leaderboard-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.leaderboard-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    min-width: 0;
+    padding: 0.55rem 0.6rem;
+    border: 1px solid rgba(92, 61, 30, 0.2);
+    border-radius: 8px;
+    background: rgba(255, 250, 240, 0.65);
+    color: var(--muted);
+    font-family: "Roboto", sans-serif;
+    font-size: 0.78rem;
+}
+
+.leaderboard-rank {
+    color: var(--accent);
+    font-family: "Bungee", sans-serif;
+    font-size: 0.6rem;
+}
+
+.leaderboard-name {
+    overflow: hidden;
+    color: var(--ink);
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.leaderboard-time {
+    color: var(--electric);
+    font-family: "Bungee", sans-serif;
+    font-size: 0.58rem;
+}
+
+.leaderboard-list .leaderboard-empty {
+    grid-column: 1 / -1;
+    justify-content: center;
+    min-height: 46px;
 }
 
 .how-it-works {
@@ -369,18 +544,26 @@ body {
     .back-link { margin-bottom: 1rem; font-size: 0.65rem; }
     .simulator-header > p:last-child { font-size: 1.05rem; }
     .simulator-card { border-width: 2px; border-radius: 14px; }
-    .simulator-stage { min-height: 430px; }
+    .simulator-stage { min-height: 470px; }
     .stage-label { font-size: 0.47rem; }
     .label-camera { top: 9%; left: 4%; }
     .label-pi { top: 19%; right: 4%; }
     .label-motors { right: 4%; bottom: 17%; }
     .launch-overlay { padding: 1.35rem 1rem; }
+    .finish-overlay { padding: 1.15rem 0.85rem; }
+    .score-entry { flex-direction: column; }
+    .score-entry .launch-button { width: 100%; }
     .live-status { bottom: 0.65rem; font-size: 0.73rem; }
     .simulator-bottom { grid-template-columns: 1fr; gap: 0.8rem; padding: 0.8rem; }
     .control-heading { align-items: flex-start; flex-direction: column; gap: 0.3rem; }
     .control-heading p { text-align: left; }
-    .telemetry-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 0.75rem; }
-    .telemetry-panel h2 { grid-column: 1 / -1; }
+    .telemetry-panel,
+    .course-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 0.75rem; }
+    .telemetry-panel h2,
+    .course-panel h2,
+    .course-panel p { grid-column: 1 / -1; }
+    .leaderboard-heading { align-items: flex-start; flex-direction: column; gap: 0.25rem; }
+    .leaderboard-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .how-it-works { margin-top: 1.25rem; padding: 1rem; }
     .how-it-works p { font-size: 1rem; }
 }

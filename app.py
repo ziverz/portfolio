@@ -1,6 +1,7 @@
 # Import the 'os' module to interact with the operating system
 import os
 import re
+import sqlite3
 import xml.etree.ElementTree as ET
 from urllib.request import urlopen
 from urllib.error import URLError
@@ -15,6 +16,40 @@ from flask import Flask, render_template, request, send_file, after_this_request
 # static_folder='.' means look for static files (CSS, JS, images) in the current directory
 # static_url_path='' means static files are served from the root URL path
 app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
+os.makedirs(app.instance_path, exist_ok=True)
+LEADERBOARD_DATABASE = os.path.join(app.instance_path, 'orb_leaderboard.sqlite3')
+BLOCKED_NAME_TERMS = {
+    'asshole', 'bitch', 'cock', 'cunt', 'dick', 'faggot', 'fuck', 'nigger',
+    'porn', 'pussy', 'rape', 'sex', 'shit', 'whore'
+}
+
+
+def get_leaderboard_connection():
+    connection = sqlite3.connect(LEADERBOARD_DATABASE)
+    connection.row_factory = sqlite3.Row
+    connection.execute('''
+        CREATE TABLE IF NOT EXISTS orb_leaderboard (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            time_seconds REAL NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    return connection
+
+
+def validate_leaderboard_name(raw_name):
+    name = str(raw_name or '').strip()
+    if not 2 <= len(name) <= 16:
+        return None, 'Use a name between 2 and 16 characters.'
+    if not re.fullmatch(r"[A-Za-z0-9 _-]+", name):
+        return None, 'Names can use letters, numbers, spaces, hyphens, and underscores.'
+
+    name_for_filter = name.lower().replace('0', 'o').replace('1', 'i').replace('3', 'e').replace('4', 'a').replace('5', 's').replace('7', 't')
+    name_for_filter = re.sub(r'[^a-z]', '', name_for_filter)
+    if any(term in name_for_filter for term in BLOCKED_NAME_TERMS):
+        return None, 'Please choose a friendly, appropriate name.'
+    return name, None
 
 # Define a route for the home page (when someone visits the root URL '/')
 @app.route('/')
@@ -52,6 +87,44 @@ def orb():
 @app.route('/orbSimulator')
 def orb_simulator():
     return render_template('orbSimulator.html')
+
+
+@app.route('/api/orb-leaderboard', methods=['GET', 'POST'])
+def orb_leaderboard():
+    if request.method == 'POST':
+        payload = request.get_json(silent=True) or {}
+        name, name_error = validate_leaderboard_name(payload.get('name'))
+        if name_error:
+            return jsonify({'error': name_error}), 400
+
+        try:
+            time_seconds = float(payload.get('time'))
+        except (TypeError, ValueError):
+            return jsonify({'error': 'That run time does not look valid.'}), 400
+
+        if not 0.1 <= time_seconds <= 1800:
+            return jsonify({'error': 'That run time is outside the allowed range.'}), 400
+
+        with get_leaderboard_connection() as connection:
+            connection.execute(
+                'INSERT INTO orb_leaderboard (name, time_seconds) VALUES (?, ?)',
+                (name, round(time_seconds, 1))
+            )
+
+    with get_leaderboard_connection() as connection:
+        rows = connection.execute('''
+            SELECT name, time_seconds
+            FROM orb_leaderboard
+            ORDER BY time_seconds ASC, id ASC
+            LIMIT 10
+        ''').fetchall()
+
+    return jsonify({
+        'entries': [
+            {'name': row['name'], 'time': row['time_seconds']}
+            for row in rows
+        ]
+    })
 
 # Define a route for '/convert' that only accepts POST requests (form submissions with data)
 @app.route('/convert', methods=['POST'])
