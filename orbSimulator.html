@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Drive a virtual Omnidirectional Rolling Bot.">
+    <title>Use the ORB — Ziv Cohen</title>
+    <link rel="stylesheet" href="nav.css?v=1.1">
+    <link rel="stylesheet" href="orb_simulator.css?v=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Markazi+Text:wght@400..700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="site-nav">
+        <a href="/" class="nav-brand">Ziv Cohen</a>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/projects" class="active">Projects</a></li>
+            <li><a href="/resume">Resume</a></li>
+            <li><a href="/thoughts">My Thoughts</a></li>
+        </ul>
+    </nav>
+
+    <main class="simulator-page">
+        <header class="simulator-header">
+            <a href="/orb" class="back-link">← BACK TO ORB</a>
+            <p class="eyebrow">UNLICENSED VIRTUAL TEST TRACK</p>
+            <h1>USE THE ORB</h1>
+            <p>Three omni wheels. One suspiciously round robot. Zero liability for virtual property damage.</p>
+        </header>
+
+        <section class="simulator-card" aria-labelledby="simulator-title">
+            <h2 id="simulator-title" class="sr-only">Interactive ORB simulator</h2>
+            <div class="simulator-stage" id="orb-stage">
+                <div class="stage-label label-camera">720P FPV CAMERA</div>
+                <div class="stage-label label-pi">PI ZERO 2 W</div>
+                <div class="stage-label label-motors">3× OMNI WHEELS</div>
+
+                <div class="launch-overlay" id="launch-overlay">
+                    <p class="launch-kicker">THE ROBOT IS WAITING</p>
+                    <h2>CLICK HERE TO USE THE ORB</h2>
+                    <p>It has been told this is a simulation. It remains unconvinced.</p>
+                    <button type="button" class="launch-button" id="launch-orb">WAKE UP THE ORB</button>
+                </div>
+
+                <p class="live-status" id="live-status" aria-live="polite">ORB is in polite standby mode.</p>
+            </div>
+
+            <div class="simulator-bottom">
+                <section class="control-panel" aria-label="ORB controls">
+                    <div class="control-heading">
+                        <h2>DRIVE CONTROLS</h2>
+                        <p>WASD / ARROW KEYS ON DESKTOP</p>
+                    </div>
+                    <div class="drive-controls">
+                        <button type="button" class="drive-button forward" data-control="up" aria-label="Drive forward">▲</button>
+                        <button type="button" class="drive-button left" data-control="left" aria-label="Drive left">◀</button>
+                        <button type="button" class="drive-button stop" id="reset-orb" aria-label="Reset ORB position">RESET</button>
+                        <button type="button" class="drive-button right" data-control="right" aria-label="Drive right">▶</button>
+                        <button type="button" class="drive-button backward" data-control="down" aria-label="Drive backward">▼</button>
+                    </div>
+                    <div class="turn-controls">
+                        <button type="button" class="turn-button" data-control="turn-left">↺ SPIN LEFT</button>
+                        <button type="button" class="turn-button" data-control="turn-right">SPIN RIGHT ↻</button>
+                    </div>
+                </section>
+
+                <aside class="telemetry-panel" aria-label="ORB telemetry">
+                    <h2>VERY SCIENTIFIC TELEMETRY</h2>
+                    <div class="telemetry-row"><span>WHEEL A</span><strong id="wheel-a">0%</strong></div>
+                    <div class="telemetry-row"><span>WHEEL B</span><strong id="wheel-b">0%</strong></div>
+                    <div class="telemetry-row"><span>WHEEL C</span><strong id="wheel-c">0%</strong></div>
+                    <div class="telemetry-row"><span>MODE</span><strong id="orb-mode">STANDBY</strong></div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2>WHAT YOU'RE SEEING</h2>
+            <p>The clear shell rolls while the internal chassis stays mostly upright. The three wheel values are calculated from your movement direction, just like a simplified kiwi-drive control system.</p>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/three@0.160.1/build/three.min.js"></script>
+    <script src="orb_simulator.js?v=1.0"></script>
+</body>
+
+</html>

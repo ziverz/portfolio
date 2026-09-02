@@ -1,0 +1,386 @@
+:root {
+    --bg: #f5f0e8;
+    --ink: #2c2420;
+    --paper: #ede4d3;
+    --line: #c4a882;
+    --accent: #8b5e3c;
+    --accent-dark: #5c3d1e;
+    --muted: #7a6652;
+    --electric: #1d6b5d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    min-height: 100dvh;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Markazi Text", serif;
+}
+
+.simulator-page {
+    width: min(1120px, calc(100% - 3rem));
+    margin: 0 auto;
+    padding: 3rem 0 4rem;
+}
+
+.simulator-header {
+    max-width: 760px;
+    margin-bottom: 2rem;
+}
+
+.back-link,
+.eyebrow,
+.control-heading h2,
+.control-heading p,
+.telemetry-panel h2,
+.how-it-works h2,
+.launch-kicker,
+.launch-button,
+.drive-button,
+.turn-button {
+    font-family: "Bungee", sans-serif;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 1.3rem;
+    color: var(--accent);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+}
+
+.eyebrow {
+    margin: 0 0 0.55rem;
+    color: var(--electric);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+}
+
+.simulator-header h1 {
+    margin: 0 0 0.75rem;
+    color: var(--accent-dark);
+    font-family: "Bungee", sans-serif;
+    font-size: clamp(2rem, 7vw, 4rem);
+    line-height: 1.1;
+}
+
+.simulator-header > p:last-child {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.25rem;
+    line-height: 1.45;
+}
+
+.simulator-card {
+    overflow: hidden;
+    border: 3px solid var(--line);
+    border-radius: 20px;
+    background: var(--paper);
+    box-shadow: 0 18px 45px rgba(44, 36, 32, 0.16);
+}
+
+.simulator-stage {
+    position: relative;
+    min-height: 560px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 48% 38%, rgba(245, 240, 232, 0.95), rgba(214, 200, 176, 0.8) 54%, rgba(139, 94, 60, 0.22));
+}
+
+.simulator-stage canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
+.stage-label {
+    position: absolute;
+    z-index: 2;
+    padding: 0.38rem 0.55rem;
+    border: 1px solid rgba(92, 61, 30, 0.4);
+    border-radius: 999px;
+    background: rgba(245, 240, 232, 0.74);
+    color: var(--accent-dark);
+    font-family: "Bungee", sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.03em;
+    pointer-events: none;
+}
+
+.label-camera { top: 13%; left: 7%; }
+.label-pi { right: 7%; top: 22%; }
+.label-motors { right: 9%; bottom: 16%; }
+
+.live-status {
+    position: absolute;
+    z-index: 3;
+    bottom: 1rem;
+    left: 50%;
+    width: min(88%, 520px);
+    margin: 0;
+    padding: 0.65rem 1rem;
+    transform: translateX(-50%);
+    border: 1px solid rgba(92, 61, 30, 0.25);
+    border-radius: 999px;
+    background: rgba(44, 36, 32, 0.88);
+    color: #f5f0e8;
+    font-family: "Roboto", sans-serif;
+    font-size: 0.86rem;
+    text-align: center;
+}
+
+.launch-overlay {
+    position: absolute;
+    z-index: 5;
+    top: 50%;
+    left: 50%;
+    width: min(430px, calc(100% - 2rem));
+    padding: 1.8rem;
+    transform: translate(-50%, -50%);
+    border: 3px solid var(--line);
+    border-radius: 16px;
+    background: rgba(245, 240, 232, 0.95);
+    box-shadow: 0 14px 34px rgba(44, 36, 32, 0.2);
+    text-align: center;
+    transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
+}
+
+.launch-overlay.is-hidden {
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(-50%, -45%);
+}
+
+.launch-kicker {
+    margin: 0 0 0.55rem;
+    color: var(--electric);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+}
+
+.launch-overlay h2 {
+    margin: 0;
+    color: var(--accent-dark);
+    font-family: "Bungee", sans-serif;
+    font-size: clamp(1.2rem, 4vw, 1.7rem);
+    line-height: 1.35;
+}
+
+.launch-overlay > p:not(.launch-kicker) {
+    margin: 0.75rem 0 1.2rem;
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.35;
+}
+
+.launch-button,
+.drive-button,
+.turn-button {
+    border: 0;
+    cursor: pointer;
+}
+
+.launch-button {
+    padding: 0.9rem 1rem;
+    border-radius: 9px;
+    background: var(--accent);
+    color: #f5f0e8;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.launch-button:hover,
+.launch-button:focus-visible {
+    background: var(--accent-dark);
+    outline: none;
+    transform: translateY(-3px) rotate(-1deg);
+}
+
+.simulator-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
+    gap: 1.25rem;
+    padding: 1.25rem;
+    border-top: 3px solid var(--line);
+    background: #e5dac7;
+}
+
+.control-panel,
+.telemetry-panel {
+    padding: 1.1rem;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: rgba(245, 240, 232, 0.72);
+}
+
+.control-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.control-heading h2,
+.telemetry-panel h2,
+.how-it-works h2 {
+    margin: 0;
+    color: var(--accent-dark);
+    font-size: 0.84rem;
+    letter-spacing: 0.04em;
+}
+
+.control-heading p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.55rem;
+    letter-spacing: 0.03em;
+    text-align: right;
+}
+
+.drive-controls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(48px, 68px));
+    grid-template-areas:
+        ". up ."
+        "left stop right"
+        ". down .";
+    justify-content: center;
+    gap: 0.45rem;
+}
+
+.drive-button {
+    display: grid;
+    min-height: 48px;
+    place-items: center;
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    background: var(--paper);
+    color: var(--accent-dark);
+    font-size: 1rem;
+    transition: transform 0.15s, background 0.15s, color 0.15s;
+    touch-action: manipulation;
+}
+
+.drive-button:hover,
+.drive-button:focus-visible,
+.drive-button.is-pressed {
+    background: var(--accent);
+    color: #f5f0e8;
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.drive-button:disabled,
+.turn-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.forward { grid-area: up; }
+.left { grid-area: left; }
+.stop { grid-area: stop; font-size: 0.54rem; }
+.right { grid-area: right; }
+.backward { grid-area: down; }
+
+.turn-controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.55rem;
+    margin-top: 0.75rem;
+}
+
+.turn-button {
+    min-height: 42px;
+    padding: 0.55rem 0.7rem;
+    border: 2px solid var(--electric);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--electric);
+    font-size: 0.58rem;
+    transition: transform 0.15s, background 0.15s, color 0.15s;
+    touch-action: manipulation;
+}
+
+.turn-button:hover,
+.turn-button:focus-visible,
+.turn-button.is-pressed {
+    background: var(--electric);
+    color: #f5f0e8;
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.telemetry-panel h2 { margin-bottom: 0.75rem; }
+
+.telemetry-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid rgba(92, 61, 30, 0.2);
+    color: var(--muted);
+    font-family: "Roboto", sans-serif;
+    font-size: 0.8rem;
+}
+
+.telemetry-row strong {
+    color: var(--accent-dark);
+    font-family: "Bungee", sans-serif;
+    font-size: 0.65rem;
+}
+
+.how-it-works {
+    max-width: 800px;
+    margin: 2rem auto 0;
+    padding: 1.4rem;
+    border-left: 5px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    background: var(--paper);
+}
+
+.how-it-works h2 { margin-bottom: 0.6rem; }
+.how-it-works p { margin: 0; color: var(--muted); font-size: 1.12rem; line-height: 1.5; }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 700px) {
+    .simulator-page {
+        width: calc(100% - 1.25rem);
+        padding: 1.7rem 0 2.5rem;
+    }
+
+    .simulator-header { margin-bottom: 1.35rem; }
+    .back-link { margin-bottom: 1rem; font-size: 0.65rem; }
+    .simulator-header > p:last-child { font-size: 1.05rem; }
+    .simulator-card { border-width: 2px; border-radius: 14px; }
+    .simulator-stage { min-height: 430px; }
+    .stage-label { font-size: 0.47rem; }
+    .label-camera { top: 9%; left: 4%; }
+    .label-pi { top: 19%; right: 4%; }
+    .label-motors { right: 4%; bottom: 17%; }
+    .launch-overlay { padding: 1.35rem 1rem; }
+    .live-status { bottom: 0.65rem; font-size: 0.73rem; }
+    .simulator-bottom { grid-template-columns: 1fr; gap: 0.8rem; padding: 0.8rem; }
+    .control-heading { align-items: flex-start; flex-direction: column; gap: 0.3rem; }
+    .control-heading p { text-align: left; }
+    .telemetry-panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 0.75rem; }
+    .telemetry-panel h2 { grid-column: 1 / -1; }
+    .how-it-works { margin-top: 1.25rem; padding: 1rem; }
+    .how-it-works p { font-size: 1rem; }
+}

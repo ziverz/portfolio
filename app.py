@@ -49,6 +49,10 @@ def vr_robot_arm():
 def orb():
     return render_template('orb.html')
 
+@app.route('/orbSimulator')
+def orb_simulator():
+    return render_template('orbSimulator.html')
+
 # Define a route for '/convert' that only accepts POST requests (form submissions with data)
 @app.route('/convert', methods=['POST'])
 # This function handles the video to MP3 conversion
