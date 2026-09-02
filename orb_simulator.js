@@ -479,6 +479,10 @@
     async function loadLeaderboard() {
         try {
             const response = await fetch('/api/orb-leaderboard');
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error('The shared scoreboard is not connected to this site yet.');
+            }
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Could not load the leaderboard.');
             renderLeaderboard(data.entries || []);
@@ -486,7 +490,7 @@
             leaderboardList.replaceChildren();
             const empty = document.createElement('li');
             empty.className = 'leaderboard-empty';
-            empty.textContent = 'Leaderboard temporarily hiding under the couch.';
+            empty.textContent = 'Shared scoreboard is being wired up. The ORB is keeping its tiny trophies safe.';
             leaderboardList.append(empty);
         }
     }
@@ -604,6 +608,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, time: elapsedBeforeCompletion })
             });
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                throw new Error('Shared score saving is not connected to zivcohen.org yet.');
+            }
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Could not save that run.');
             scoreSaved = true;
