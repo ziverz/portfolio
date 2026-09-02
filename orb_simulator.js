@@ -20,6 +20,7 @@
     ];
     const controlButtons = [...document.querySelectorAll('[data-control]')];
     const courseProgress = document.getElementById('course-progress');
+    const heartBonusLabel = document.getElementById('heart-bonus');
     const courseTime = document.getElementById('course-time');
 
     if (!window.THREE) {
@@ -71,9 +72,11 @@
     scene.add(course);
     const obstacleColliders = [];
     const checkpoints = [];
+    const movingHazards = [];
+    const heartPickups = [];
     const boundary = 7.15 * courseScale;
-    const orbRadius = 0.52;
-    const finishPosition = new THREE.Vector2(-4.9 * courseScale, 4.85 * courseScale);
+    // A forgiving driving hitbox keeps the visual gaps playable on a phone or keyboard.
+    const orbRadius = 0.38;
     const checkpointMaterial = new THREE.MeshStandardMaterial({ color: 0xe2a83b, emissive: 0x8a4d00, emissiveIntensity: 0.5, roughness: 0.42 });
     const collectedMaterial = new THREE.MeshStandardMaterial({ color: 0x5cc9a7, emissive: 0x1f9b73, emissiveIntensity: 1.25, roughness: 0.3 });
 
@@ -150,6 +153,47 @@
         course.add(gate);
     }
 
+    function addMovingBumper(x, z, axis, travel, speed, phase) {
+        const bumper = new THREE.Group();
+        const red = new THREE.MeshStandardMaterial({ color: 0xc84c48, emissive: 0x5f1314, emissiveIntensity: 0.55, roughness: 0.45 });
+        const warning = new THREE.MeshStandardMaterial({ color: 0xf3c453, emissive: 0x7d4b00, emissiveIntensity: 0.35, roughness: 0.42 });
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.36, 0.18, 18), red);
+        base.position.y = 0.1;
+        const body = new THREE.Mesh(new THREE.SphereGeometry(0.32, 20, 14), red);
+        body.position.y = 0.42;
+        const band = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.055, 8, 20), warning);
+        band.rotation.x = Math.PI / 2;
+        band.position.y = 0.42;
+        const antenna = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.3, 12), warning);
+        antenna.position.y = 0.86;
+        bumper.add(base, body, band, antenna);
+        const glow = new THREE.PointLight(0xff5b55, 0.9, 2.5);
+        glow.position.y = 0.6;
+        bumper.add(glow);
+        bumper.position.set(x, 0, z);
+        course.add(bumper);
+        movingHazards.push({ bumper, x, z, axis, travel, speed, phase, radius: 0.42 * courseScale });
+    }
+
+    function addHeart(x, z) {
+        const heart = new THREE.Group();
+        const pink = new THREE.MeshStandardMaterial({ color: 0xe66486, emissive: 0x81223f, emissiveIntensity: 0.55, roughness: 0.38 });
+        const leftLobe = new THREE.Mesh(new THREE.SphereGeometry(0.23, 18, 14), pink);
+        leftLobe.position.set(-0.19, 0.56, 0);
+        const rightLobe = leftLobe.clone();
+        rightLobe.position.x = 0.19;
+        const point = new THREE.Mesh(new THREE.ConeGeometry(0.38, 0.62, 4), pink);
+        point.rotation.z = Math.PI;
+        point.position.y = 0.3;
+        heart.add(leftLobe, rightLobe, point);
+        const glow = new THREE.PointLight(0xff7fa3, 0.7, 2.2);
+        glow.position.y = 0.48;
+        heart.add(glow);
+        heart.position.set(x, 0.1, z);
+        course.add(heart);
+        heartPickups.push({ heart, x: x * courseScale, z: z * courseScale, collected: false, phase: x + z });
+    }
+
     // A small, intentionally overbuilt training course for a tiny, very determined robot.
     addBarrier(-4.8, -5.25, 3.3, 0.28);
     addBarrier(-0.4, -5.25, 3.8, 0.28);
@@ -165,13 +209,29 @@
     addCone(2.6, -3.7);
     addCone(3.45, -2.85);
     addCone(2.55, -2.0);
+    addCone(-3.75, 1.35);
+    addCone(-2.95, 2.1);
+    addCone(0.55, 1.45);
+    addCone(1.45, 2.25);
+    addBarrier(-3.45, 0.95, 0.3, 1.55);
+    addBarrier(-4.25, 2.7, 1.35, 0.28);
+    addBarrier(0.9, 2.0, 1.45, 0.28);
+    addBarrier(2.5, 1.1, 0.28, 1.35);
+    addMovingBumper(-2.1, -0.25, 'x', 1.5, 0.0013, 0.2);
+    addMovingBumper(1.15, -3.55, 'z', 0.95, 0.0017, 1.9);
+    addMovingBumper(3.35, 1.55, 'x', 0.85, 0.0021, 3.5);
+    addHeart(-4.1, -0.75);
+    addHeart(0.35, -4.25);
+    addHeart(3.75, 3.45);
     addCheckpoint(-3.7, -3.7, 1);
     addCheckpoint(2.55, -3.0, 2);
     addCheckpoint(3.1, 2.55, 3);
-    addFinishGate(finishPosition.x, finishPosition.y);
+    addFinishGate(-4.9, 4.85);
 
     const orbRoot = new THREE.Group();
-    orbRoot.position.y = 1.72;
+    // Keep the complete ORB exactly half-size while still resting on the course floor.
+    orbRoot.scale.setScalar(0.5);
+    orbRoot.position.y = 0.84;
     scene.add(orbRoot);
 
     const shell = new THREE.Group();
@@ -263,12 +323,11 @@
         arm.position.z = 0.25;
         wheelMount.add(arm);
 
-        // The frame aims the axle tangent to the triangle. The inner group is
-        // deliberately separate so only the wheel rolls, instead of the entire
-        // assembly pirouetting around the chassis.
+        // Rotate the wheel frame sideways on its X axis so the omni wheels
+        // sit like real side-facing rollers instead of looking outward.
         const wheelFrame = new THREE.Group();
         wheelFrame.position.z = 0.58;
-        wheelFrame.rotation.z = Math.PI / 2;
+        wheelFrame.rotation.x = Math.PI / 2;
         wheelMount.add(wheelFrame);
 
         const spinGroup = new THREE.Group();
@@ -293,7 +352,7 @@
         wheels.push({ angle, spinGroup, index });
     });
 
-    const pointer = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 2.25, 0), 0.62, 0x8b5e3c, 0.18, 0.1);
+    const pointer = new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), new THREE.Vector3(0, 1.18, 0), 0.62, 0x8b5e3c, 0.18, 0.1);
     pointer.visible = false;
     scene.add(pointer);
 
@@ -308,6 +367,10 @@
     let elapsedBeforeCompletion = 0;
     let completed = false;
     let scoreSaved = false;
+    let heartBonusSeconds = 0;
+    let hazardPenaltySeconds = 0;
+    let lastHazardHitAt = 0;
+    const lastSafePosition = new THREE.Vector2(0, 0);
     const tempDirection = new THREE.Vector3();
 
     function setStatus(message) {
@@ -340,6 +403,51 @@
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = (timeInSeconds % 60).toFixed(1).padStart(4, '0');
         return `${String(minutes).padStart(2, '0')}:${seconds}`;
+    }
+
+    function currentRunTime(now = performance.now()) {
+        if (completed) return elapsedBeforeCompletion;
+        const rawTime = runStartedAt ? (now - runStartedAt) / 1000 : 0;
+        return Math.max(0.1, rawTime + hazardPenaltySeconds - heartBonusSeconds);
+    }
+
+    function updateMovingCoursePieces(now) {
+        movingHazards.forEach((hazard) => {
+            const offset = Math.sin(now * hazard.speed + hazard.phase) * hazard.travel;
+            hazard.bumper.position.x = hazard.x + (hazard.axis === 'x' ? offset : 0);
+            hazard.bumper.position.z = hazard.z + (hazard.axis === 'z' ? offset : 0);
+            hazard.bumper.rotation.y += 0.045;
+        });
+        heartPickups.forEach((pickup) => {
+            if (pickup.collected) return;
+            pickup.heart.position.y = 0.15 + Math.sin(now * 0.004 + pickup.phase) * 0.08;
+            pickup.heart.rotation.y += 0.025;
+        });
+    }
+
+    function checkTimeTrialPieces(now) {
+        heartPickups.forEach((pickup) => {
+            if (pickup.collected || Math.hypot(orbRoot.position.x - pickup.x, orbRoot.position.z - pickup.z) > 1.55) return;
+            pickup.collected = true;
+            pickup.heart.visible = false;
+            heartBonusSeconds += 1.2;
+            setStatus(`HEART GRABBED! The ORB found a ${formatTime(1.2)} time bonus.`);
+        });
+
+        if (now - lastHazardHitAt < 1100) return;
+        const hit = movingHazards.some((hazard) => {
+            const x = hazard.bumper.position.x * courseScale;
+            const z = hazard.bumper.position.z * courseScale;
+            return Math.hypot(orbRoot.position.x - x, orbRoot.position.z - z) < orbRadius + hazard.radius;
+        });
+        if (!hit) return;
+
+        hazardPenaltySeconds += 2.5;
+        lastHazardHitAt = now;
+        orbRoot.position.x = lastSafePosition.x;
+        orbRoot.position.z = lastSafePosition.y;
+        pointer.visible = false;
+        setStatus('BUMPER BONK! +2.5 seconds. The moving cone is feeling way too powerful.');
     }
 
     function renderLeaderboard(entries) {
@@ -386,16 +494,17 @@
     function updateCourseUi(now = performance.now()) {
         const collected = checkpoints.filter(({ collected: isCollected }) => isCollected).length;
         courseProgress.textContent = `${collected} / ${checkpoints.length}`;
-        const elapsed = completed
-            ? elapsedBeforeCompletion
-            : (runStartedAt ? (now - runStartedAt) / 1000 : 0);
-        courseTime.textContent = formatTime(elapsed);
+        heartBonusLabel.textContent = heartBonusSeconds ? `-${heartBonusSeconds.toFixed(1)}s` : '0.0s';
+        courseTime.textContent = formatTime(currentRunTime(now));
     }
 
     function resetCourse() {
         completed = false;
         scoreSaved = false;
         elapsedBeforeCompletion = 0;
+        heartBonusSeconds = 0;
+        hazardPenaltySeconds = 0;
+        lastSafePosition.set(0, 0);
         runStartedAt = active ? performance.now() : null;
         finishOverlay.hidden = true;
         scoreForm.reset();
@@ -406,6 +515,10 @@
             checkpoint.ring.material.copy(checkpointMaterial);
             checkpoint.marker.material.color.set(0xf3c96a);
             checkpoint.marker.material.opacity = 0.3;
+        });
+        heartPickups.forEach((pickup) => {
+            pickup.collected = false;
+            pickup.heart.visible = true;
         });
         updateCourseUi();
     }
@@ -429,13 +542,14 @@
             checkpoint.marker.material.color.set(0x52d3a0);
             checkpoint.marker.material.opacity = 0.48;
             const current = checkpoints.filter(({ collected: isCollected }) => isCollected).length;
+            lastSafePosition.set(orbRoot.position.x, orbRoot.position.z);
             setStatus(`BEACON ${checkpoint.number} ACQUIRED. ${current}/${checkpoints.length} shiny rings collected.`);
         });
 
         const allCollected = checkpoints.every(({ collected: isCollected }) => isCollected);
         if (allCollected && !completed) {
+            elapsedBeforeCompletion = currentRunTime(now);
             completed = true;
-            elapsedBeforeCompletion = (now - runStartedAt) / 1000;
             mode.textContent = 'COURSE CLEAR';
             finishTime.textContent = formatTime(elapsedBeforeCompletion);
             finishOverlay.hidden = false;
@@ -445,7 +559,7 @@
     }
 
     function resetOrb() {
-        orbRoot.position.set(0, 1.72, 0);
+        orbRoot.position.set(0, 0.84, 0);
         shell.rotation.set(0, 0, 0);
         chassis.rotation.set(0, 0, 0);
         pointer.visible = false;
@@ -466,7 +580,7 @@
         setControlEnabled(true);
         resetCourse();
         mode.textContent = 'COURSE LIVE';
-        setStatus('Course online. Collect 3 beacons, dodge the props, then claim your Hall of Roll spot.');
+        setStatus('Time trial online. Grab hearts, dodge moving bumpers, collect 3 beacons, then claim your Hall of Roll spot.');
     }
 
     launchButton.addEventListener('click', activateOrb);
@@ -549,13 +663,14 @@
     function animate(now) {
         const delta = Math.min((now - lastTime) / 1000, 0.05);
         lastTime = now;
+        updateMovingCoursePieces(now);
         const input = active && !completed ? inputValue() : { x: 0, z: 0, turn: 0 };
         const moving = Math.abs(input.x) + Math.abs(input.z) + Math.abs(input.turn) > 0;
         const wheelSpeeds = updateTelemetry(input);
 
         if (moving) {
             const length = Math.hypot(input.x, input.z) || 1;
-            const speed = 1.3 * delta;
+            const speed = 2.35 * delta;
             const nextX = orbRoot.position.x + (input.x / length) * speed;
             const nextZ = orbRoot.position.z + (input.z / length) * speed;
             const collision = collidesAt(nextX, nextZ);
@@ -572,11 +687,11 @@
             }
             shell.rotation.y += input.turn * delta * 1.7;
             tempDirection.set(input.x, 0, input.z).normalize();
-            pointer.position.set(orbRoot.position.x, 2.25, orbRoot.position.z);
+            pointer.position.set(orbRoot.position.x, 1.18, orbRoot.position.z);
             pointer.setDirection(tempDirection);
             pointer.visible = Math.abs(input.x) + Math.abs(input.z) > 0;
             wheelSpeeds.forEach((speedValue, index) => {
-                wheels[index].spinGroup.rotation.y += speedValue * delta * 8;
+                wheels[index].spinGroup.rotation.y += speedValue * delta * 13;
             });
 
             if (now - lastMotionAt > 1700) {
@@ -595,6 +710,7 @@
         chassis.position.y = -0.22 + Math.sin(now * 0.0022) * 0.025;
         chassis.rotation.z = THREE.MathUtils.lerp(chassis.rotation.z, input.x * -0.08, 0.05);
         chassis.rotation.x = THREE.MathUtils.lerp(chassis.rotation.x, input.z * 0.08, 0.05);
+        if (active && !completed) checkTimeTrialPieces(now);
         if (active) checkCourseProgress(now);
         renderer.render(scene, camera);
         requestAnimationFrame(animate);

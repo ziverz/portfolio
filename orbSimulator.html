@@ -7,7 +7,7 @@
     <meta name="description" content="Drive a virtual Omnidirectional Rolling Bot.">
     <title>Use the ORB — Ziv Cohen</title>
     <link rel="stylesheet" href="nav.css?v=1.1">
-    <link rel="stylesheet" href="orb_simulator.css?v=1.2">
+    <link rel="stylesheet" href="orb_simulator.css?v=1.3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Markazi+Text:wght@400..700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -85,8 +85,9 @@
 
                 <aside class="course-panel" aria-label="ORB obstacle course objective">
                     <h2>COURSE OBJECTIVE</h2>
-                    <p>Collect all three beacons, dodge the questionable obstacles, and earn your leaderboard spot.</p>
+                    <p>Collect all three beacons, evade the moving bumpers, grab hearts for time bonuses, and earn your leaderboard spot.</p>
                     <div class="telemetry-row"><span>BEACONS</span><strong id="course-progress">0 / 3</strong></div>
+                    <div class="telemetry-row"><span>HEART BONUS</span><strong id="heart-bonus">0.0s</strong></div>
                     <div class="telemetry-row"><span>TIME</span><strong id="course-time">00:00.0</strong></div>
                 </aside>
 
@@ -112,12 +113,12 @@
 
         <section class="how-it-works">
             <h2>WHAT YOU'RE SEEING</h2>
-            <p>The clear shell rolls while the internal chassis stays mostly upright. Navigate through the course and collect all three beacon rings to stop the clock. The three wheel values are calculated from your movement direction, just like a simplified kiwi-drive control system.</p>
+            <p>The clear shell rolls while the internal chassis stays mostly upright. Navigate through the course, evade moving bumpers, grab heart time bonuses, and collect all three beacon rings to stop the clock. The three wheel values are calculated from your movement direction, just like a simplified kiwi-drive control system.</p>
         </section>
     </main>
 
     <script src="https://unpkg.com/three@0.160.1/build/three.min.js"></script>
-    <script src="orb_simulator.js?v=1.3"></script>
+    <script src="orb_simulator.js?v=1.7"></script>
 </body>
 
 </html>
