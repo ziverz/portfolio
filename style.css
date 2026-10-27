@@ -37,7 +37,7 @@ body {
 /* ── HOME CARDS ── */
 .home_cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
     width: 90%;
     max-width: 1100px;
@@ -80,8 +80,7 @@ body {
 }
 
 .card2,
-.card3,
-.card4 {
+.card3 {
     font-size: 1.4rem;
     color: var(--accent-dark);
     font-family: var(--text-font);
